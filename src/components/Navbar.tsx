@@ -22,16 +22,6 @@ export default function Navbar() {
   const { theme, setTheme, lang, setLang } = useTheme();
   const { user, progress, isAuthenticated, isAdmin, openAuthModal, logout } = useAuth();
 
-  const nextPendingDay = React.useMemo(() => {
-    if (!progress || !progress.completedDays) return 1;
-    for (let i = 1; i <= 365; i++) {
-      if (!progress.completedDays.includes(i)) {
-        return i;
-      }
-    }
-    return 1;
-  }, [progress?.completedDays]);
-
   const isTamil = lang === 'ta';
   const isEn = lang === 'en';
 
@@ -69,7 +59,7 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href={isAuthenticated ? `/dashboard?day=${nextPendingDay}` : '/dashboard'}
+              href="/dashboard"
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 pathname.startsWith('/dashboard')
                   ? 'text-sacred-700 dark:text-gold-400 font-semibold bg-gold-100/50 dark:bg-sanctuary-800/60'
@@ -195,7 +185,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="flex items-center gap-2 pl-2">
                 <Link
-                  href={`/dashboard?day=${nextPendingDay}`}
+                  href="/dashboard"
                   className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full bg-sanctuary-100 dark:bg-sanctuary-900 border border-sanctuary-200 dark:border-sanctuary-800 hover:border-gold-400 transition-colors"
                 >
                   <div className="w-7 h-7 rounded-full bg-gold-500 text-white flex items-center justify-center font-bold text-xs">
@@ -245,7 +235,7 @@ export default function Navbar() {
             {isAuthenticated ? (
               <div className="flex items-center gap-1.5">
                 <Link
-                  href={`/dashboard?day=${nextPendingDay}`}
+                  href="/dashboard"
                   className="w-7 h-7 rounded-full bg-gold-500 text-white flex items-center justify-center font-bold text-xs shadow-sm"
                   title={user?.name}
                 >

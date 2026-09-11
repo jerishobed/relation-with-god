@@ -12,9 +12,10 @@ export default function HeroSection() {
   const { lang } = useTheme();
 
   const nextPendingDay = React.useMemo(() => {
-    if (!progress || !progress.completedDays) return 1;
+    if (!progress || !Array.isArray(progress.completedDays)) return 1;
     for (let i = 1; i <= 365; i++) {
-      if (!progress.completedDays.includes(i)) {
+      const isDone = progress.completedDays.some((d: number | string) => Number(d) === i);
+      if (!isDone) {
         return i;
       }
     }
@@ -76,7 +77,7 @@ export default function HeroSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
               {isAuthenticated ? (
                 <Link
-                  href={`/dashboard?day=${nextPendingDay}`}
+                  href="/dashboard"
                   className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-gold-500 via-gold-600 to-sacred-700 text-white font-semibold text-sm shadow-glow-gold hover:shadow-xl hover:scale-[1.02] active:scale-95 transition-all"
                 >
                   <BookOpen className="w-4 h-4" />

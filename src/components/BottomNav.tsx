@@ -22,16 +22,6 @@ export default function BottomNav() {
 
   const isTamil = lang === 'ta';
 
-  const nextPendingDay = React.useMemo(() => {
-    if (!progress || !progress.completedDays) return 1;
-    for (let i = 1; i <= 365; i++) {
-      if (!progress.completedDays.includes(i)) {
-        return i;
-      }
-    }
-    return 1;
-  }, [progress?.completedDays]);
-
   const isHome = pathname === '/';
   const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/read');
   const isAdminPath = pathname.startsWith('/admin');
@@ -57,7 +47,7 @@ export default function BottomNav() {
 
         {/* 2. Today's Reading Target Tab */}
         <Link
-          href={`/dashboard?day=${nextPendingDay}`}
+          href="/dashboard"
           className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl relative transition-all ${
             isDashboard
               ? 'text-sacred-700 dark:text-gold-400 font-bold'

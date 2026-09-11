@@ -25,16 +25,25 @@ export default function ReadingPlanGrid() {
   const { progress, toggleDay, toggleChapter, isAuthenticated, openAuthModal } = useAuth();
   const { lang } = useTheme();
 
+  // Helper: check if a given day is completed (robust against number or string types)
+  const isDayDone = React.useCallback(
+    (dNum: number) => {
+      if (!progress || !Array.isArray(progress.completedDays)) return false;
+      return progress.completedDays.some((d: number | string) => Number(d) === dNum);
+    },
+    [progress?.completedDays]
+  );
+
   // Find next uncompleted day (Today's default target)
   const nextPendingDay = useMemo(() => {
-    if (!progress || !progress.completedDays) return 1;
+    if (!progress || !Array.isArray(progress.completedDays)) return 1;
     for (let i = 1; i <= 365; i++) {
-      if (!progress.completedDays.includes(i)) {
+      if (!isDayDone(i)) {
         return i;
       }
     }
     return 1;
-  }, [progress?.completedDays]);
+  }, [isDayDone, progress?.completedDays]);
 
   // Calculate Calendar Day of Year
   const calendarDayOfYear = useMemo(() => {
@@ -46,12 +55,12 @@ export default function ReadingPlanGrid() {
     return Math.min(365, Math.max(1, dayOfYear));
   }, []);
 
-  const [activeDayNum, setActiveDayNum] = useState<number>(nextPendingDay);
-  const [hasUserManuallySelectedDay, setHasUserManuallySelectedDay] = useState(false);
+  // If user explicitly chooses a day during this session (prev/next or picking a day)
+  const [selectedDayOverride, setSelectedDayOverride] = useState<number | null>(null);
   const [showCompletedSection, setShowCompletedSection] = useState(false);
   const [showFullSchedule, setShowFullSchedule] = useState(false);
 
-  // Sync activeDayNum with nextPendingDay when user progress changes / loads from Firestore
+  // Read URL ?day= param once on mount ONLY if the day is not completed or explicitly requested
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -59,16 +68,17 @@ export default function ReadingPlanGrid() {
       if (dayParam) {
         const parsed = parseInt(dayParam, 10);
         if (!isNaN(parsed) && parsed >= 1 && parsed <= 365) {
-          setActiveDayNum(parsed);
-          setHasUserManuallySelectedDay(true);
-          return;
+          // If the day in param is already completed, do NOT force user back to it
+          if (!isDayDone(parsed)) {
+            setSelectedDayOverride(parsed);
+          }
         }
       }
     }
-    if (!hasUserManuallySelectedDay) {
-      setActiveDayNum(nextPendingDay);
-    }
-  }, [nextPendingDay, hasUserManuallySelectedDay]);
+  }, [isDayDone]);
+
+  // Active day defaults to nextPendingDay, unless user explicitly selected another day in this session
+  const activeDayNum = selectedDayOverride !== null ? selectedDayOverride : nextPendingDay;
 
   // Filters for the full schedule (when expanded)
   const [selectedPeriod, setSelectedPeriod] = useState<string>('all');
@@ -93,18 +103,18 @@ export default function ReadingPlanGrid() {
 
   // Active target day data
   const currentDayData = planData.days.find((d) => d.day === activeDayNum) || planData.days[0];
-  const isTargetCompleted = progress.completedDays.includes(currentDayData.day);
+  const isTargetCompleted = isDayDone(currentDayData.day);
 
   // Completed days list
   const completedDaysList = useMemo(() => {
-    return planData.days.filter((d) => progress.completedDays.includes(d.day));
-  }, [progress.completedDays]);
+    return planData.days.filter((d) => isDayDone(d.day));
+  }, [isDayDone, progress?.completedDays]);
 
   // Full filtered days
   const filteredDays = useMemo(() => {
     return planData.days.filter((d) => {
       if (selectedPeriod !== 'all' && d.period.id !== selectedPeriod) return false;
-      const isCompleted = progress.completedDays.includes(d.day);
+      const isCompleted = isDayDone(d.day);
       if (statusFilter === 'completed' && !isCompleted) return false;
       if (statusFilter === 'pending' && isCompleted) return false;
 
@@ -117,7 +127,7 @@ export default function ReadingPlanGrid() {
       }
       return true;
     });
-  }, [selectedPeriod, statusFilter, searchQuery, progress.completedDays]);
+  }, [selectedPeriod, statusFilter, searchQuery, isDayDone, progress?.completedDays]);
 
   const handleToggleDay = (e: React.MouseEvent, dayNum: number) => {
     e.preventDefault();
@@ -126,7 +136,7 @@ export default function ReadingPlanGrid() {
       openAuthModal();
       return;
     }
-    const willComplete = !progress.completedDays.includes(dayNum);
+    const willComplete = !isDayDone(dayNum);
     toggleDay(dayNum);
     if (willComplete) {
       confetti({
@@ -135,12 +145,8 @@ export default function ReadingPlanGrid() {
         origin: { y: 0.65 },
         colors: ['#D4AF37', '#E6C85E', '#BA3142', '#FAF8F5'],
       });
-      // If user marks the active day complete, smoothly advance to the next day
-      if (dayNum === activeDayNum && dayNum < 365) {
-        setTimeout(() => {
-          setActiveDayNum(dayNum + 1);
-        }, 500);
-      }
+      // Automatically advance to the next pending day upon completion
+      setSelectedDayOverride(null);
     }
   };
 
@@ -175,10 +181,7 @@ export default function ReadingPlanGrid() {
             {/* Jump to Next Unread Day button if browsing another day */}
             {activeDayNum !== nextPendingDay && (
               <button
-                onClick={() => {
-                  setActiveDayNum(nextPendingDay);
-                  setHasUserManuallySelectedDay(false);
-                }}
+                onClick={() => setSelectedDayOverride(null)}
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500 text-white text-[11px] font-bold transition-all shadow-sm hover:bg-amber-600"
                 title="Jump to your next uncompleted day"
               >
@@ -189,10 +192,7 @@ export default function ReadingPlanGrid() {
 
             {/* Quick switcher to Calendar Day of Year */}
             <button
-              onClick={() => {
-                setActiveDayNum(calendarDayOfYear);
-                setHasUserManuallySelectedDay(true);
-              }}
+              onClick={() => setSelectedDayOverride(calendarDayOfYear)}
               className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-all ${
                 activeDayNum === calendarDayOfYear
                   ? 'bg-gold-500 text-white border-gold-500 font-bold'
@@ -208,10 +208,7 @@ export default function ReadingPlanGrid() {
           {/* Quick day switcher (< Prev | Next >) */}
           <div className="flex items-center gap-1">
             <button
-              onClick={() => {
-                setHasUserManuallySelectedDay(true);
-                setActiveDayNum((prev) => Math.max(1, prev - 1));
-              }}
+              onClick={() => setSelectedDayOverride(Math.max(1, activeDayNum - 1))}
               disabled={activeDayNum <= 1}
               className="p-1.5 rounded-xl border border-sanctuary-200 dark:border-sanctuary-700 bg-white dark:bg-sanctuary-800 text-sanctuary-600 disabled:opacity-30 hover:border-gold-400 transition-colors"
               title="Previous Day"
@@ -222,10 +219,7 @@ export default function ReadingPlanGrid() {
               {currentDayData.day} / 365
             </span>
             <button
-              onClick={() => {
-                setHasUserManuallySelectedDay(true);
-                setActiveDayNum((prev) => Math.min(365, prev + 1));
-              }}
+              onClick={() => setSelectedDayOverride(Math.min(365, activeDayNum + 1))}
               disabled={activeDayNum >= 365}
               className="p-1.5 rounded-xl border border-sanctuary-200 dark:border-sanctuary-700 bg-white dark:bg-sanctuary-800 text-sanctuary-600 disabled:opacity-30 hover:border-gold-400 transition-colors"
               title="Next Day"
@@ -399,7 +393,7 @@ export default function ReadingPlanGrid() {
               {completedDaysList.map((d) => (
                 <div
                   key={d.day}
-                  onClick={() => setActiveDayNum(d.day)}
+                  onClick={() => setSelectedDayOverride(d.day)}
                   className="p-4 rounded-2xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50/40 dark:bg-emerald-950/20 hover:border-emerald-500 transition-all cursor-pointer flex items-center justify-between"
                 >
                   <div>
@@ -548,7 +542,7 @@ export default function ReadingPlanGrid() {
                   <div
                     key={d.day}
                     onClick={() => {
-                      setActiveDayNum(d.day);
+                      setSelectedDayOverride(d.day);
                       // smooth scroll to top target
                       document.getElementById('reading-grid')?.scrollIntoView({ behavior: 'smooth' });
                     }}
@@ -626,7 +620,7 @@ export default function ReadingPlanGrid() {
                     <button
                       key={d.day}
                       onClick={() => {
-                        setActiveDayNum(d.day);
+                        setSelectedDayOverride(d.day);
                         document.getElementById('reading-grid')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                       title={`Day ${d.day}: ${d.englishSummary}`}

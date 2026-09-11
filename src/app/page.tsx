@@ -27,9 +27,10 @@ export default function HomePage() {
   const isTamil = lang === 'ta';
 
   const nextPendingDay = React.useMemo(() => {
-    if (!progress || !progress.completedDays) return 1;
+    if (!progress || !Array.isArray(progress.completedDays)) return 1;
     for (let i = 1; i <= 365; i++) {
-      if (!progress.completedDays.includes(i)) {
+      const isDone = progress.completedDays.some((d: number | string) => Number(d) === i);
+      if (!isDone) {
         return i;
       }
     }
@@ -151,7 +152,7 @@ export default function HomePage() {
           <div className="pt-2">
             {isAuthenticated ? (
               <Link
-                href={`/dashboard?day=${nextPendingDay}`}
+                href="/dashboard"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-gold-500 via-gold-600 to-sacred-700 text-white font-bold text-sm shadow-glow-gold hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
               >
                 <span>{isTamil ? `வாசிப்பை தொடரவும் (நாள் ${nextPendingDay})` : `Continue Day ${nextPendingDay} Reading`}</span>
