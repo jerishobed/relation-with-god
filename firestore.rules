@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isJerishAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'jerishbtech@gmail.com' || 
+        request.auth.token.email == 'relationswithgod@gmail.com'
+      );
+    }
+
+    // User-isolated progress & profile documents
+    match /users/{userId} {
+      allow read: if request.auth != null && (request.auth.uid == userId || isJerishAdmin());
+      allow write: if request.auth != null && request.auth.uid == userId;
+      
+      match /progress/{document=**} {
+        allow read: if request.auth != null && (request.auth.uid == userId || isJerishAdmin());
+        allow write: if request.auth != null && request.auth.uid == userId;
+      }
+
+      match /notes/{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Community announcements
+    match /announcements/{announcementId} {
+      allow read: if true;
+      allow write: if isJerishAdmin();
+    }
+
+    // Admin metrics aggregation
+    match /metrics/{metricId} {
+      allow read, write: if isJerishAdmin();
+    }
+  }
+}

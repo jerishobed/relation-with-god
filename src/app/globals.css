@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #FAF8F5;
+  --bg-secondary: #F3ECE2;
+  --bg-card: #FFFFFF;
+  --text-primary: #2C2218;
+  --text-secondary: #635345;
+  --text-muted: #8F7D6D;
+  --border-color: #E6DCce;
+  --gold-accent: #D4AF37;
+  --gold-glow: rgba(212, 175, 55, 0.25);
+  --sacred-accent: #8C1F2D;
+}
+
+.dark {
+  --bg-primary: #0F0D0A;
+  --bg-secondary: #171410;
+  --bg-card: #1F1B15;
+  --text-primary: #F5EFEB;
+  --text-secondary: #C8B9A6;
+  --text-muted: #8E7E6E;
+  --border-color: #352B21;
+  --gold-accent: #E6C85E;
+  --gold-glow: rgba(230, 200, 94, 0.3);
+  --sacred-accent: #BA3142;
+}
+
+.theme-sepia {
+  --bg-primary: #F4ECD8;
+  --bg-secondary: #EBE0C5;
+  --bg-card: #FAF4E5;
+  --text-primary: #3B2E1E;
+  --text-secondary: #6E5A44;
+  --text-muted: #968169;
+  --border-color: #DECFA8;
+  --gold-accent: #B8860B;
+  --gold-glow: rgba(184, 134, 11, 0.25);
+  --sacred-accent: #7C1A22;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-scripture {
+  font-family: 'Merriweather', 'Noto Sans Tamil', Georgia, serif;
+}
+
+.font-tamil {
+  font-family: 'Noto Sans Tamil', 'Inter', sans-serif;
+}
+
+/* Elegant Spiritual Texture Overlay */
+.bg-sanctuary-texture {
+  background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
+                    radial-gradient(circle at 100% 100%, rgba(140, 31, 45, 0.04) 0%, transparent 50%);
+}
+
+.dark .bg-sanctuary-texture {
+  background-image: radial-gradient(circle at 50% 0%, rgba(230, 200, 94, 0.08) 0%, transparent 70%),
+                    radial-gradient(circle at 100% 100%, rgba(186, 49, 66, 0.05) 0%, transparent 50%);
+}
+
+/* Gold Gradient Borders & Glows */
+.gold-gradient-border {
+  border-image: linear-gradient(to right, #B8860B, #F4DE8C, #B8860B) 1;
+}
+
+.card-sanctuary {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+}
+
+.gold-glow-hover:hover {
+  box-shadow: 0 0 25px -5px var(--gold-glow);
+}
+
+/* Custom Devotional Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-accent);
+}
+
+/* Subtle Shimmer Animation */
+@keyframes holyLight {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+.animate-holy-light {
+  animation: holyLight 6s infinite ease-in-out;
+}

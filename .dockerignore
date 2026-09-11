@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.gitignore
+*.docx
+assets_extracted
+README.md
+.env*.local
