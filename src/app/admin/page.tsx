@@ -12,6 +12,8 @@ import {
   getAdminAudienceFromFirestore,
   saveAnnouncementToFirestore,
   getAnnouncementFromFirestore,
+  getVisitorMetricsFromFirestore,
+  VisitorMetrics,
 } from '@/lib/firestoreService';
 import { BroadcastAnnouncement, AdminAudienceStats, UserProfile } from '@/types';
 import {
@@ -34,6 +36,11 @@ import {
   RefreshCw,
   Sparkles,
   Cloud,
+  Eye,
+  Smartphone,
+  Monitor,
+  Share2,
+  Compass,
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -43,6 +50,14 @@ export default function AdminPage() {
   const initialData = getRealAudienceData();
   const [stats, setStats] = useState<AdminAudienceStats>(initialData.stats);
   const [users, setUsers] = useState<Array<UserProfile & { currentDay: number; progressPercent: number; lastActive: string }>>(initialData.users);
+  const [visitorMetrics, setVisitorMetrics] = useState<VisitorMetrics>({
+    totalVisits: 0,
+    visitsToday: 0,
+    instagramVisits: 0,
+    mobileVisits: 0,
+    desktopVisits: 0,
+    recentVisits: [],
+  });
   const [isLoadingLive, setIsLoadingLive] = useState(false);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<string>('');
 
@@ -55,22 +70,27 @@ export default function AdminPage() {
   const [adminPasscode, setAdminPasscode] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Fetch live audience from Firestore
+  // Fetch live audience and visitor metrics from Firestore
   const fetchLiveAudience = useCallback(async () => {
     setIsLoadingLive(true);
     try {
-      const res = await getAdminAudienceFromFirestore();
-      if (res.users && res.users.length > 0) {
-        setStats(res.stats);
-        setUsers(res.users);
+      const [audienceRes, visitorRes] = await Promise.all([
+        getAdminAudienceFromFirestore(),
+        getVisitorMetricsFromFirestore(),
+      ]);
+
+      if (audienceRes.users && audienceRes.users.length > 0) {
+        setStats(audienceRes.stats);
+        setUsers(audienceRes.users);
       } else {
         const local = getRealAudienceData();
         setStats(local.stats);
         setUsers(local.users);
       }
+      setVisitorMetrics(visitorRes);
       setLastRefreshedAt(new Date().toLocaleTimeString());
     } catch (e) {
-      console.warn('Error loading live audience from Firestore:', e);
+      console.warn('Error loading live audience and visitor metrics from Firestore:', e);
     } finally {
       setIsLoadingLive(false);
     }
@@ -390,6 +410,126 @@ export default function AdminPage() {
             </p>
           </div>
 
+        </div>
+
+        {/* Real-time Website Traffic & Campaign Analytics */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-sanctuary-900 border border-sanctuary-200 dark:border-sanctuary-800 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+                <Eye className="w-3 h-3 text-blue-600" />
+                <span>Real-Time Visitor Tracking</span>
+              </div>
+              <h3 className="font-cinzel text-lg font-bold text-sanctuary-900 dark:text-sanctuary-100">
+                Website Traffic & Promotion Campaign Analytics
+              </h3>
+              <p className="text-xs text-sanctuary-500">
+                Tracks anonymous and authenticated visitors across devices, including Instagram Reel referrals.
+              </p>
+            </div>
+            {lastRefreshedAt && (
+              <span className="text-[11px] text-sanctuary-400 bg-sanctuary-50 dark:bg-sanctuary-800 px-3 py-1 rounded-full border border-sanctuary-200 dark:border-sanctuary-700">
+                Updated {lastRefreshedAt}
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+            <div className="p-4 rounded-2xl bg-sanctuary-50 dark:bg-sanctuary-800/50 border border-sanctuary-200 dark:border-sanctuary-700">
+              <span className="text-[11px] font-bold text-sanctuary-500 uppercase tracking-wider block">
+                Total Pageviews
+              </span>
+              <span className="font-cinzel text-2xl font-extrabold text-sanctuary-900 dark:text-sanctuary-50 block mt-1">
+                {visitorMetrics.totalVisits.toLocaleString()}
+              </span>
+              <span className="text-[10px] text-sanctuary-400 mt-0.5 block">
+                All visitor sessions
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-sanctuary-50 dark:bg-sanctuary-800/50 border border-sanctuary-200 dark:border-sanctuary-700">
+              <span className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider block">
+                Visits Today
+              </span>
+              <span className="font-cinzel text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 block mt-1">
+                {visitorMetrics.visitsToday.toLocaleString()}
+              </span>
+              <span className="text-[10px] text-sanctuary-400 mt-0.5 block">
+                Live requests today
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-pink-500/10 via-purple-500/10 to-gold-500/10 border border-pink-300 dark:border-pink-800/60">
+              <span className="text-[11px] font-bold text-pink-600 dark:text-pink-400 uppercase tracking-wider block flex items-center gap-1">
+                <Share2 className="w-3 h-3 text-pink-600" />
+                <span>Instagram Clicks</span>
+              </span>
+              <span className="font-cinzel text-2xl font-extrabold text-pink-600 dark:text-pink-400 block mt-1">
+                {visitorMetrics.instagramVisits.toLocaleString()}
+              </span>
+              <span className="text-[10px] text-sanctuary-500 mt-0.5 block">
+                From Reel & Bio links
+              </span>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-sanctuary-50 dark:bg-sanctuary-800/50 border border-sanctuary-200 dark:border-sanctuary-700">
+              <span className="text-[11px] font-bold text-sanctuary-500 uppercase tracking-wider block flex items-center gap-1">
+                <Smartphone className="w-3 h-3 text-gold-600" />
+                <span>Mobile Traffic</span>
+              </span>
+              <span className="font-cinzel text-2xl font-extrabold text-gold-600 dark:text-gold-400 block mt-1">
+                {visitorMetrics.totalVisits > 0
+                  ? Math.round((visitorMetrics.mobileVisits / visitorMetrics.totalVisits) * 100)
+                  : 0}
+                %
+              </span>
+              <span className="text-[10px] text-sanctuary-400 mt-0.5 block">
+                {visitorMetrics.mobileVisits} Mobile • {visitorMetrics.desktopVisits} Desktop
+              </span>
+            </div>
+          </div>
+
+          {/* Recent Live Activity Stream */}
+          {visitorMetrics.recentVisits.length > 0 && (
+            <div className="pt-2 border-t border-sanctuary-100 dark:border-sanctuary-800">
+              <span className="text-[11px] font-bold text-sanctuary-400 uppercase tracking-wider mb-2 block">
+                Recent Visitor Stream (Live)
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {visitorMetrics.recentVisits.slice(0, 6).map((v, i) => (
+                  <div
+                    key={i}
+                    className="px-3 py-2 rounded-xl bg-sanctuary-50 dark:bg-sanctuary-800/40 border border-sanctuary-200 dark:border-sanctuary-700 flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      {v.isMobile ? (
+                        <Smartphone className="w-3.5 h-3.5 text-sanctuary-400 shrink-0" />
+                      ) : (
+                        <Monitor className="w-3.5 h-3.5 text-sanctuary-400 shrink-0" />
+                      )}
+                      <span className="font-mono font-medium text-sanctuary-800 dark:text-sanctuary-200 truncate">
+                        {v.path}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 text-[10px]">
+                      {v.isInstagram ? (
+                        <span className="px-1.5 py-0.5 rounded bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 font-semibold">
+                          Instagram
+                        </span>
+                      ) : (
+                        <span className="text-sanctuary-400 truncate max-w-[70px]">
+                          {v.referrer}
+                        </span>
+                      )}
+                      <span className="text-sanctuary-400 font-mono">
+                        {v.time}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Cohort Journey Breakdown */}

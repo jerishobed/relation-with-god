@@ -7,6 +7,10 @@ import {
   collection,
   getDocs,
   serverTimestamp,
+  addDoc,
+  query,
+  orderBy,
+  limit,
 } from 'firebase/firestore';
 import { UserProfile, UserProgress, AdminAudienceStats, BroadcastAnnouncement } from '@/types';
 import { createFreshProgress } from './storage';
@@ -246,5 +250,116 @@ export async function getAnnouncementFromFirestore(): Promise<BroadcastAnnouncem
   } catch (err) {
     console.warn('Firestore getAnnouncement warning:', err);
     return null;
+  }
+}
+
+/**
+ * Record anonymous or authenticated page visit for real-time traffic tracking
+ */
+export async function recordVisitorPageView(path: string) {
+  if (typeof window === 'undefined') return;
+  try {
+    // Session debounce: avoid duplicate counts within 60s for the exact same path
+    const sessionKey = `rwg_pv_${path}`;
+    const lastVisit = sessionStorage.getItem(sessionKey);
+    const now = Date.now();
+    if (lastVisit && now - parseInt(lastVisit, 10) < 60000) {
+      return;
+    }
+    sessionStorage.setItem(sessionKey, now.toString());
+
+    const referrer = document.referrer || 'direct';
+    const href = window.location.href;
+    const isInstagram =
+      referrer.includes('instagram.com') ||
+      href.includes('utm_source=instagram') ||
+      href.includes('ref=ig') ||
+      href.includes('instagram');
+
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    const visitsCol = collection(db, 'visits');
+    await addDoc(visitsCol, {
+      path,
+      referrer: isInstagram ? 'instagram' : (referrer.length > 50 ? referrer.slice(0, 50) : referrer),
+      isInstagram,
+      isMobile,
+      date: todayStr,
+      timestamp: serverTimestamp(),
+    });
+  } catch (e) {
+    // Non-blocking for visitors
+  }
+}
+
+export interface VisitorMetrics {
+  totalVisits: number;
+  visitsToday: number;
+  instagramVisits: number;
+  mobileVisits: number;
+  desktopVisits: number;
+  recentVisits: Array<{
+    path: string;
+    referrer: string;
+    isInstagram: boolean;
+    isMobile: boolean;
+    time: string;
+  }>;
+}
+
+export async function getVisitorMetricsFromFirestore(): Promise<VisitorMetrics> {
+  try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const visitsCol = collection(db, 'visits');
+    const q = query(visitsCol, orderBy('timestamp', 'desc'), limit(100));
+    const snap = await getDocs(q);
+
+    let totalVisits = snap.size;
+    let visitsToday = 0;
+    let instagramVisits = 0;
+    let mobileVisits = 0;
+    let desktopVisits = 0;
+    const recentVisits: VisitorMetrics['recentVisits'] = [];
+
+    snap.forEach((d) => {
+      const data = d.data();
+      if (data.date === todayStr) visitsToday++;
+      if (data.isInstagram) instagramVisits++;
+      if (data.isMobile) mobileVisits++;
+      else desktopVisits++;
+
+      let timeStr = 'Recently';
+      if (data.timestamp?.toDate) {
+        timeStr = data.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+
+      recentVisits.push({
+        path: data.path || '/',
+        referrer: data.referrer || 'direct',
+        isInstagram: !!data.isInstagram,
+        isMobile: !!data.isMobile,
+        time: timeStr,
+      });
+    });
+
+    return {
+      totalVisits,
+      visitsToday,
+      instagramVisits,
+      mobileVisits,
+      desktopVisits,
+      recentVisits: recentVisits.slice(0, 10),
+    };
+  } catch (e) {
+    console.warn('Visitor metrics fetch error:', e);
+    return {
+      totalVisits: 0,
+      visitsToday: 0,
+      instagramVisits: 0,
+      mobileVisits: 0,
+      desktopVisits: 0,
+      recentVisits: [],
+    };
   }
 }
