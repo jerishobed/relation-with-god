@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { useTheme } from '@/lib/themeContext';
 import ProgressOverview from '@/components/ProgressOverview';
 import ReadingPlanGrid from '@/components/ReadingPlanGrid';
 import { getStoredAnnouncement } from '@/lib/storage';
+import { getAnnouncementFromFirestore } from '@/lib/firestoreService';
+import { BroadcastAnnouncement } from '@/types';
 import {
   Sparkles,
   Flame,
@@ -20,7 +22,15 @@ import {
 export default function DashboardPage() {
   const { user, progress, resetProgress, isAuthenticated, openAuthModal } = useAuth();
   const { lang } = useTheme();
-  const announcement = getStoredAnnouncement();
+  const [announcement, setAnnouncement] = useState<BroadcastAnnouncement>(getStoredAnnouncement());
+
+  useEffect(() => {
+    getAnnouncementFromFirestore().then((live) => {
+      if (live && live.title) {
+        setAnnouncement(live);
+      }
+    });
+  }, []);
 
   const isTamil = lang === 'ta';
 

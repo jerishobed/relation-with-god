@@ -8,7 +8,7 @@ import {
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore';
-import { UserProfile, UserProgress, AdminAudienceStats } from '@/types';
+import { UserProfile, UserProgress, AdminAudienceStats, BroadcastAnnouncement } from '@/types';
 import { createFreshProgress } from './storage';
 
 /**
@@ -127,21 +127,30 @@ export async function getAdminAudienceFromFirestore(): Promise<{
     const usersCol = collection(db, 'users');
     const snapshot = await getDocs(usersCol);
 
+    const todayStr = new Date().toISOString().split('T')[0];
     const enrichedUsers: Array<UserProfile & { currentDay: number; progressPercent: number; lastActive: string }> = [];
 
     snapshot.forEach((d) => {
       const u = d.data();
-      const completedDaysCount = u.completedDaysCount || 0;
+      const completedDaysCount = Number(u.completedDaysCount) || 0;
       const progressPercent = Math.round((completedDaysCount / 365) * 100 * 10) / 10;
+      
+      let lastActive = 'Never';
+      if (u.lastActiveDate === todayStr) {
+        lastActive = 'Today';
+      } else if (u.lastActiveDate) {
+        lastActive = u.lastActiveDate;
+      }
+
       enrichedUsers.push({
         id: u.id || d.id,
         name: u.name || 'Devotee',
         email: u.email || '',
         role: u.role || 'user',
-        joinedDate: u.joinedDate || new Date().toISOString().split('T')[0],
+        joinedDate: u.joinedDate || todayStr,
         currentDay: Math.min(365, completedDaysCount + 1),
         progressPercent,
-        lastActive: u.lastActiveDate || 'Recently',
+        lastActive,
       });
     });
 
@@ -149,15 +158,15 @@ export async function getAdminAudienceFromFirestore(): Promise<{
     const enrolledIn365 = totalAudience;
     const activeToday = enrichedUsers.filter((u) => u.lastActive === 'Today').length;
     const activeThisWeek = activeToday;
-    const totalChaptersRead = snapshot.docs.reduce((acc, curr) => acc + (curr.data().completedChaptersCount || 0), 0);
+    const totalChaptersRead = snapshot.docs.reduce((acc, curr) => acc + (Number(curr.data().completedChaptersCount) || 0), 0);
 
     const cohortDistribution = {
-      days1to30: enrichedUsers.filter((u) => u.currentDay <= 30).length,
+      days1to30: enrichedUsers.filter((u) => u.currentDay <= 30 && u.currentDay < 365).length,
       days31to90: enrichedUsers.filter((u) => u.currentDay > 30 && u.currentDay <= 90).length,
       days91to180: enrichedUsers.filter((u) => u.currentDay > 90 && u.currentDay <= 180).length,
       days181to270: enrichedUsers.filter((u) => u.currentDay > 180 && u.currentDay <= 270).length,
-      days271to365: enrichedUsers.filter((u) => u.currentDay > 270 && u.currentDay <= 365).length,
-      completedAll: enrichedUsers.filter((u) => u.currentDay >= 365).length,
+      days271to365: enrichedUsers.filter((u) => u.currentDay > 270 && u.currentDay < 365).length,
+      completedAll: enrichedUsers.filter((u) => u.currentDay >= 365 && u.progressPercent >= 100).length,
     };
 
     return {
@@ -193,5 +202,49 @@ export async function getAdminAudienceFromFirestore(): Promise<{
       },
       users: [],
     };
+  }
+}
+
+/**
+ * Save broadcast announcement to Firestore /announcements/global
+ */
+export async function saveAnnouncementToFirestore(announcement: BroadcastAnnouncement) {
+  try {
+    const ref = doc(db, 'announcements', 'global');
+    await setDoc(
+      ref,
+      {
+        ...announcement,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (err) {
+    console.warn('Firestore saveAnnouncement warning:', err);
+  }
+}
+
+/**
+ * Fetch broadcast announcement from Firestore /announcements/global
+ */
+export async function getAnnouncementFromFirestore(): Promise<BroadcastAnnouncement | null> {
+  try {
+    const ref = doc(db, 'announcements', 'global');
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      return {
+        id: data.id || 'global_notice',
+        title: data.title || '',
+        message: data.message || '',
+        author: data.author || 'J Jerish Obed',
+        date: data.date || '',
+        active: data.active ?? true,
+      };
+    }
+    return null;
+  } catch (err) {
+    console.warn('Firestore getAnnouncement warning:', err);
+    return null;
   }
 }
