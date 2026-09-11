@@ -54,6 +54,8 @@
         "oAuthBrandDisplayName": "Relation With God",
         "supportEmail": "relationswithgod@gmail.com",
         "authorizedRedirectUris": [
+          "https://relationswithgod.in",
+          "https://www.relationswithgod.in",
           "https://jerish-51bd7.web.app",
           "https://jerish-51bd7.firebaseapp.com",
           "http://localhost"
