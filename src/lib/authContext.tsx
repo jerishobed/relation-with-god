@@ -212,15 +212,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Dedicated Jerishbtech Admin Login
   const loginAdmin = (usernameOrEmail: string, passcode: string): { success: boolean; error?: string } => {
     const cleanUser = usernameOrEmail.toLowerCase().trim();
-    const isJerishbtech =
+    const isAuthorized =
+      cleanUser === 'relationswithgod' ||
+      cleanUser === 'relationswithgod@gmail.com' ||
       cleanUser === 'jerishbtech' ||
       cleanUser === 'jerishbtech@gmail.com' ||
-      cleanUser === 'relationswithgod@gmail.com';
+      cleanUser === 'admin';
 
-    if (!isJerishbtech) {
+    if (!isAuthorized) {
       return {
         success: false,
-        error: 'Access Restricted: Only jerishbtech is authorized to access the ministry console.',
+        error: 'Access Restricted: Only authorized administrators can access the Relations With God ministry console.',
       };
     }
 
@@ -236,13 +238,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!passcode || !validPasswords.includes(passcode.trim())) {
       return {
         success: false,
-        error: 'Invalid password. Please enter the founder passcode.',
+        error: 'Invalid password. Please enter the administrator passcode.',
       };
     }
 
     const adminUser: UserProfile = {
       id: 'usr_jerishbtech',
-      name: 'J Jerish Obed (jerishbtech)',
+      name: 'Relations With God (Administrator)',
       email: 'jerishbtech@gmail.com',
       role: 'admin',
       joinedDate: '2024-01-01',

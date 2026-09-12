@@ -66,7 +66,7 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Admin login credentials state
-  const [adminUsername, setAdminUsername] = useState('jerishbtech');
+  const [adminUsername, setAdminUsername] = useState('relationswithgod');
   const [adminPasscode, setAdminPasscode] = useState('');
   const [authError, setAuthError] = useState('');
 
@@ -183,10 +183,10 @@ export default function AdminPage() {
               <span>Ministry Administration Gate</span>
             </div>
             <h2 className="font-cinzel text-2xl font-bold text-sanctuary-900 dark:text-sanctuary-100">
-              Founder Console
+              Ministry Administration
             </h2>
             <p className="text-xs text-sanctuary-600 dark:text-sanctuary-400">
-              This console is strictly reserved for <span className="font-semibold text-sanctuary-900 dark:text-sanctuary-100">jerishbtech</span>. Sign in with your founder Google account to access live Cloud Firestore analytics.
+              This console is strictly reserved for <span className="font-semibold text-sanctuary-900 dark:text-sanctuary-100">Relations With God</span> administrators. Sign in with your authorized Google account to access live Cloud Firestore analytics.
             </p>
           </div>
 
@@ -210,7 +210,7 @@ export default function AdminPage() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
-              <span>Continue with Google (jerishbtech)</span>
+              <span>Continue with Google (Relations With God)</span>
             </button>
 
             <div className="relative flex items-center justify-center my-3">
@@ -230,14 +230,14 @@ export default function AdminPage() {
                   required
                   value={adminUsername}
                   onChange={(e) => setAdminUsername(e.target.value)}
-                  placeholder="jerishbtech"
+                  placeholder="relationswithgod"
                   className="w-full px-4 py-2.5 rounded-xl border border-sanctuary-200 dark:border-sanctuary-700 bg-sanctuary-50 dark:bg-sanctuary-800 text-sm focus:outline-none focus:ring-2 focus:ring-sacred-500 font-mono text-sanctuary-900 dark:text-sanctuary-100"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-sanctuary-700 dark:text-sanctuary-300 mb-1">
-                  Founder Passcode
+                  Administrator Passcode
                 </label>
                 <div className="relative">
                   <KeyRound className="w-4 h-4 text-sanctuary-400 absolute left-3.5 top-3" />
