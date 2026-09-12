@@ -17,4 +17,6 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 
+export const AUTH_BUILD_REV = 'release_v2_jerish_51bd7_auth';
+
 export default app;
