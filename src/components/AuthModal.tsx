@@ -85,7 +85,7 @@ export default function AuthModal() {
             <BookOpen className="w-6 h-6" />
           </div>
           <h3 className="font-cinzel text-xl font-bold text-sanctuary-900 dark:text-sanctuary-100">
-            {isSignUp ? 'Begin Your 365-Day Walk' : 'Welcome Back Devotee'}
+            {isSignUp ? 'Begin Your 365-Day Walk' : 'Welcome Back, Child of God'}
           </h3>
           <p className="text-xs text-sanctuary-600 dark:text-sanctuary-400 font-tamil mt-1">
             தேவனோடு அனுதினமும் இணைந்து வாசியுங்கள்

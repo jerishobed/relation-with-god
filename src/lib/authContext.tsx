@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const profile: UserProfile = {
           id: fbUser.uid,
-          name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Devotee',
+          name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Child of God',
           email: fbUser.email || '',
           role: isOwner ? 'admin' : 'user',
           joinedDate: new Date().toISOString().split('T')[0],

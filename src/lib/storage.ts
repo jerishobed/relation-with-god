@@ -10,9 +10,9 @@ const STORAGE_KEYS = {
 };
 
 export const DEFAULT_USER: UserProfile = {
-  id: 'guest_devotee',
-  name: 'Beloved Seeker',
-  email: 'devotee@relationwithgod.com',
+  id: 'guest_user',
+  name: 'Child of God',
+  email: 'guest@relationwithgod.in',
   role: 'user',
   joinedDate: new Date().toISOString().split('T')[0],
 };
@@ -38,7 +38,7 @@ export const createFreshProgress = (userId: string): UserProgress => ({
   bookmarks: [],
 });
 
-export const DEFAULT_PROGRESS: UserProgress = createFreshProgress('guest_devotee');
+export const DEFAULT_PROGRESS: UserProgress = createFreshProgress('guest_user');
 
 export const DEFAULT_ANNOUNCEMENT: BroadcastAnnouncement = {
   id: 'welcome_notice',
@@ -59,6 +59,7 @@ export function getStoredUser(): UserProfile | null {
     if (
       parsed &&
       (parsed.id === 'guest_devotee' ||
+        parsed.id === 'guest_user' ||
         parsed.id.startsWith('guest_') ||
         parsed.email === 'devotee@gmail.com' ||
         parsed.name === 'Google Devotee' ||
@@ -269,7 +270,7 @@ export function getRealAudienceData(): {
   
   // If no users registered yet, check current user
   const currentUser = getStoredUser();
-  if (registered.length === 0 && currentUser && currentUser.id !== 'guest_devotee') {
+  if (registered.length === 0 && currentUser && currentUser.id !== 'guest_user' && currentUser.id !== 'guest_devotee') {
     registered.push(currentUser);
   }
 

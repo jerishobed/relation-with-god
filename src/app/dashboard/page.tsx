@@ -9,6 +9,7 @@ import ReadingPlanGrid from '@/components/ReadingPlanGrid';
 import { getStoredAnnouncement } from '@/lib/storage';
 import { getAnnouncementFromFirestore } from '@/lib/firestoreService';
 import { BroadcastAnnouncement } from '@/types';
+import AuthBarrier from '@/components/AuthBarrier';
 import {
   Sparkles,
   Flame,
@@ -20,7 +21,7 @@ import {
 } from 'lucide-react';
 
 export default function DashboardPage() {
-  const { user, progress, resetProgress, isAuthenticated, openAuthModal } = useAuth();
+  const { user, progress, resetProgress, isAuthenticated, loading, openAuthModal } = useAuth();
   const { lang } = useTheme();
   const [announcement, setAnnouncement] = useState<BroadcastAnnouncement>(getStoredAnnouncement());
 
@@ -33,6 +34,25 @@ export default function DashboardPage() {
   }, []);
 
   const isTamil = lang === 'ta';
+
+  // 1. Loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-sanctuary-texture space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-gold-400 via-gold-500 to-sacred-700 flex items-center justify-center text-white shadow-glow-gold animate-pulse">
+          <BookOpen className="w-7 h-7" />
+        </div>
+        <p className="font-cinzel text-xs sm:text-sm text-sanctuary-600 dark:text-sanctuary-300 font-semibold tracking-wider">
+          {isTamil ? 'உங்கள் வாசிப்புப் பயணம் தயாராகிறது...' : 'Loading Your 365-Day Journey...'}
+        </p>
+      </div>
+    );
+  }
+
+  // 2. Strict Auth Barrier: Compulsory Sign-In
+  if (!isAuthenticated) {
+    return <AuthBarrier targetDescription={isTamil ? '365 நாள் வாசிப்பு அட்டவணை' : '365-Day Reading Plan'} />;
+  }
 
   return (
     <div className="min-h-screen py-3 sm:py-6 md:py-8 bg-sanctuary-texture">
@@ -50,7 +70,7 @@ export default function DashboardPage() {
               </div>
 
               <h1 className="font-cinzel text-base sm:text-2xl font-extrabold text-sanctuary-900 dark:text-sanctuary-50 tracking-tight">
-                Peace be with you, {isAuthenticated ? (user?.name || 'Devotee') : (isTamil ? 'அன்பான தேவபிள்ளையே' : 'Beloved Devotee')}
+                Peace be with you, {user?.name || (isTamil ? 'அன்பான தேவபிள்ளையே' : 'Child of God')}
               </h1>
 
               <p className="font-tamil text-xs sm:text-sm text-sacred-700 dark:text-gold-400 font-medium hidden sm:block">
@@ -58,54 +78,23 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* Quick Actions: Reset / Sign In */}
+            {/* Quick Action: Reset */}
             <div className="flex items-center gap-2 shrink-0">
-              {!isAuthenticated ? (
-                <button
-                  onClick={openAuthModal}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-gold-500 to-sacred-700 text-white text-[11px] sm:text-xs font-bold shadow-glow-gold hover:opacity-95 transition-all active:scale-95"
-                >
-                  <User className="w-3.5 h-3.5" />
-                  <span>{isTamil ? 'உள்நுழைக' : 'Sign In'}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    if (window.confirm('Would you like to restart your reading plan fresh from Day 1? This will reset completed chapters.')) {
-                      resetProgress();
-                    }
-                  }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-sanctuary-200 dark:border-sanctuary-700 bg-sanctuary-50 dark:bg-sanctuary-800 text-[10px] sm:text-xs font-semibold text-sanctuary-500 hover:text-sacred-700 transition-colors"
-                  title="Reset to Day 1"
-                >
-                  <RotateCcw className="w-3 h-3" />
-                  <span className="hidden sm:inline">Reset to Day 1</span>
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  if (window.confirm('Would you like to restart your reading plan fresh from Day 1? This will reset completed chapters.')) {
+                    resetProgress();
+                  }
+                }}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-sanctuary-200 dark:border-sanctuary-700 bg-sanctuary-50 dark:bg-sanctuary-800 text-[10px] sm:text-xs font-semibold text-sanctuary-500 hover:text-sacred-700 transition-colors"
+                title="Reset to Day 1"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span className="hidden sm:inline">Reset to Day 1</span>
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Guest prompt banner if not authenticated */}
-        {!isAuthenticated && (
-          <div className="p-3 sm:p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-gold-500/10 to-sacred-600/10 border border-amber-400/30 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-            <div className="flex items-center gap-2.5">
-              <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
-              <p className="text-xs text-sanctuary-800 dark:text-sanctuary-200">
-                <span className="font-bold">{isTamil ? 'அன்பான குறிப்பு: ' : 'Devotional Note: '}</span>
-                {isTamil
-                  ? 'நீங்கள் இப்போது விருந்தினராகப் பார்க்கிறீர்கள். உங்கள் வாசிப்புத் தொடர், குறிப்புகள் மற்றும் முடிக்கப்பட்ட அதிகாரங்களைச் சேமிக்க உள்நுழையவும்.'
-                  : 'You are viewing as a guest. Sign in with Google or Email to record your chapters, streak, and daily notes to your account.'}
-              </p>
-            </div>
-            <button
-              onClick={openAuthModal}
-              className="shrink-0 px-4 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition-all active:scale-95"
-            >
-              {isTamil ? 'இப்போதே உள்நுழையவும்' : 'Sign In with Google'}
-            </button>
-          </div>
-        )}
 
         {/* Compact Micro-Stats Bar (Only 45px tall!) */}
         <ProgressOverview />

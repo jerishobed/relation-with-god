@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { useTheme } from '@/lib/themeContext';
 import planData from '@/data/readingPlan.json';
+import AuthBarrier from '@/components/AuthBarrier';
 import {
   ArrowLeft,
   CheckCircle2,
@@ -22,7 +23,7 @@ import confetti from 'canvas-confetti';
 
 export default function DayReaderClient({ day }: { day: number }) {
   const router = useRouter();
-  const { progress, toggleChapter, toggleDay, saveNote, isAuthenticated, openAuthModal } = useAuth();
+  const { progress, toggleChapter, toggleDay, saveNote, isAuthenticated, loading, openAuthModal } = useAuth();
   const { lang } = useTheme();
 
   const dayNum = day || 1;
@@ -33,6 +34,33 @@ export default function DayReaderClient({ day }: { day: number }) {
 
   const isTamil = lang === 'ta';
   const isDayCompleted = progress.completedDays.includes(dayNum);
+
+  // 1. Loading State while resolving auth
+  if (loading) {
+    return (
+      <div className="min-h-[80vh] flex flex-col items-center justify-center bg-sanctuary-texture space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-gold-400 via-gold-500 to-sacred-700 flex items-center justify-center text-white shadow-glow-gold animate-pulse">
+          <BookOpen className="w-7 h-7" />
+        </div>
+        <p className="font-cinzel text-xs sm:text-sm text-sanctuary-600 dark:text-sanctuary-300 font-semibold tracking-wider">
+          {isTamil ? `நாள் ${dayNum} வேத வாசிப்பு தயாராகிறது...` : `Loading Day ${dayNum} Scripture...`}
+        </p>
+      </div>
+    );
+  }
+
+  // 2. Compulsory Sign-In Barrier
+  if (!isAuthenticated) {
+    return (
+      <AuthBarrier
+        targetDescription={
+          isTamil
+            ? `நாள் ${dayNum} (${dayData?.tamilSummary || 'வேத வாசிப்பு'})`
+            : `Day ${dayNum} (${dayData?.englishSummary || 'Scripture Reading'})`
+        }
+      />
+    );
+  }
 
   // Initialize existing note
   useEffect(() => {
@@ -131,32 +159,6 @@ export default function DayReaderClient({ day }: { day: number }) {
           </div>
         </div>
 
-        {/* Guest Sign-In Notice for non-authenticated readers */}
-        {!isAuthenticated && (
-          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-amber-500/15 via-gold-500/10 to-sacred-600/10 border-2 border-amber-400/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left shadow-sm">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-600 flex items-center justify-center shrink-0">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div className="space-y-0.5">
-                <p className="font-semibold text-xs sm:text-sm text-sanctuary-900 dark:text-sanctuary-100">
-                  {isTamil ? 'உங்கள் வாசிப்பைச் சேமிக்க உள்நுழையவும்' : 'Sign In to Save Your 365-Day Walk'}
-                </p>
-                <p className="text-[11px] sm:text-xs text-sanctuary-600 dark:text-sanctuary-400">
-                  {isTamil
-                    ? 'முடிக்கப்பட்ட அதிகாரங்கள் மற்றும் ஜெபக் குறிப்புகள் உங்கள் கணக்கில் பத்திரமாகச் சேமிக்கப்படும்.'
-                    : 'Only signed-in devotees can save daily reading progress, streaks, and personal reflection notes.'}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={openAuthModal}
-              className="shrink-0 w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-gold-500 to-amber-600 hover:opacity-95 text-white font-bold text-xs shadow-glow-gold transition-all active:scale-95"
-            >
-              {isTamil ? 'இப்போதே உள்நுழையவும்' : 'Sign In with Google / Email'}
-            </button>
-          </div>
-        )}
 
         {/* Day Headline Card */}
         <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-sanctuary-900 border border-sanctuary-200 dark:border-sanctuary-800 shadow-sm relative overflow-hidden">

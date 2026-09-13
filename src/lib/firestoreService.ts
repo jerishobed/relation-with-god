@@ -148,7 +148,7 @@ export async function getAdminAudienceFromFirestore(): Promise<{
 
       enrichedUsers.push({
         id: u.id || d.id,
-        name: u.name || 'Devotee',
+        name: u.name || 'Child of God',
         email: u.email || '',
         role: u.role || 'user',
         joinedDate: u.joinedDate || todayStr,
