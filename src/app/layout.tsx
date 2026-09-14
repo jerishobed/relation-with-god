@@ -60,9 +60,9 @@ export default function RootLayout({
             />
           </>
         )}
-        <VisitorTracker />
         <ThemeProvider>
           <AuthProvider>
+            <VisitorTracker />
             <Navbar />
             <main className="flex-1 pb-24">{children}</main>
             <Footer />

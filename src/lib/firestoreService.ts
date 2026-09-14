@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db, auth } from './firebase';
 import {
   doc,
   getDoc,
@@ -256,9 +256,39 @@ export async function getAnnouncementFromFirestore(): Promise<BroadcastAnnouncem
 /**
  * Record anonymous or authenticated page visit for real-time traffic tracking
  */
-export async function recordVisitorPageView(path: string) {
+export async function recordVisitorPageView(path: string, userEmail?: string | null) {
   if (typeof window === 'undefined') return;
   try {
+    // 1. Never track admin routes
+    if (!path || path.startsWith('/admin')) return;
+
+    // 2. Never track founder / owner accounts
+    const emailToCheck = (userEmail || auth.currentUser?.email || '').toLowerCase();
+    if (
+      emailToCheck === 'jerishbtech@gmail.com' ||
+      emailToCheck === 'jerishobed@gmail.com' ||
+      emailToCheck === 'relationswithgod@gmail.com'
+    ) {
+      return;
+    }
+
+    // Check cached profile in localStorage
+    try {
+      const stored = localStorage.getItem('rwg_user_profile');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const storedEmail = (parsed?.email || '').toLowerCase();
+        if (
+          storedEmail === 'jerishbtech@gmail.com' ||
+          storedEmail === 'jerishobed@gmail.com' ||
+          storedEmail === 'relationswithgod@gmail.com' ||
+          parsed?.role === 'admin'
+        ) {
+          return;
+        }
+      }
+    } catch {}
+
     // Session debounce: avoid duplicate counts within 60s for the exact same path
     const sessionKey = `rwg_pv_${path}`;
     const lastVisit = sessionStorage.getItem(sessionKey);
