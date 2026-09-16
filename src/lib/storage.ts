@@ -266,11 +266,22 @@ export function getRealAudienceData(): {
   stats: AdminAudienceStats;
   users: Array<UserProfile & { currentDay: number; progressPercent: number; lastActive: string }>;
 } {
-  const registered = getRegisteredUsers();
+  const registered = getRegisteredUsers().filter(
+    (u) =>
+      (u.email || '').toLowerCase() !== 'jerishbtech@gmail.com' &&
+      (u.email || '').toLowerCase() !== 'jerishobed@gmail.com'
+  );
   
   // If no users registered yet, check current user
   const currentUser = getStoredUser();
-  if (registered.length === 0 && currentUser && currentUser.id !== 'guest_user' && currentUser.id !== 'guest_devotee') {
+  if (
+    registered.length === 0 &&
+    currentUser &&
+    currentUser.id !== 'guest_user' &&
+    currentUser.id !== 'guest_devotee' &&
+    (currentUser.email || '').toLowerCase() !== 'jerishbtech@gmail.com' &&
+    (currentUser.email || '').toLowerCase() !== 'jerishobed@gmail.com'
+  ) {
     registered.push(currentUser);
   }
 

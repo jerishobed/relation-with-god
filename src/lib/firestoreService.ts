@@ -133,9 +133,17 @@ export async function getAdminAudienceFromFirestore(): Promise<{
 
     const todayStr = new Date().toISOString().split('T')[0];
     const enrichedUsers: Array<UserProfile & { currentDay: number; progressPercent: number; lastActive: string }> = [];
+    let totalChaptersRead = 0;
 
     snapshot.forEach((d) => {
       const u = d.data();
+      const email = (u.email || '').toLowerCase();
+      
+      // Skip founder and internal accounts
+      if (email === 'jerishbtech@gmail.com' || email === 'jerishobed@gmail.com') {
+        return;
+      }
+
       const completedDaysCount = Number(u.completedDaysCount) || 0;
       const progressPercent = Math.round((completedDaysCount / 365) * 100 * 10) / 10;
       
@@ -156,13 +164,14 @@ export async function getAdminAudienceFromFirestore(): Promise<{
         progressPercent,
         lastActive,
       });
+
+      totalChaptersRead += Number(u.completedChaptersCount) || 0;
     });
 
     const totalAudience = enrichedUsers.length;
     const enrolledIn365 = totalAudience;
     const activeToday = enrichedUsers.filter((u) => u.lastActive === 'Today').length;
     const activeThisWeek = activeToday;
-    const totalChaptersRead = snapshot.docs.reduce((acc, curr) => acc + (Number(curr.data().completedChaptersCount) || 0), 0);
 
     const cohortDistribution = {
       days1to30: enrichedUsers.filter((u) => u.currentDay <= 30 && u.currentDay < 365).length,
