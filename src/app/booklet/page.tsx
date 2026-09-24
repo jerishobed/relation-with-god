@@ -128,16 +128,16 @@ export default function BookletPage() {
       const result = await submitBookletRequest({
         fullName: cleanName,
         phoneNumber: cleanPhone,
-        email: email.trim() || undefined,
+        email: email.trim(),
         addressLine1: cleanAddress1,
-        addressLine2: addressLine2.trim() || undefined,
+        addressLine2: addressLine2.trim(),
         city: cleanCity,
         state: cleanState,
         pincode: cleanPincode,
         country: country.trim() || 'India',
-        languagePreference,
-        prayerRequest: prayerRequest.trim() || undefined,
-        userId: user?.id || null,
+        languagePreference: 'ta',
+        prayerRequest: prayerRequest.trim(),
+        userId: user?.id || '',
       });
 
       if (result.success && result.id) {

@@ -413,13 +413,33 @@ export async function submitBookletRequest(
   try {
     const bookletCol = collection(db, 'booklet_requests');
     const nowIso = new Date().toISOString();
-    const docRef = await addDoc(bookletCol, {
-      ...requestData,
+
+    const cleanPayload: Record<string, any> = {
+      fullName: requestData.fullName ? String(requestData.fullName).trim() : '',
+      phoneNumber: requestData.phoneNumber ? String(requestData.phoneNumber).trim() : '',
+      email: requestData.email ? String(requestData.email).trim() : '',
+      addressLine1: requestData.addressLine1 ? String(requestData.addressLine1).trim() : '',
+      addressLine2: requestData.addressLine2 ? String(requestData.addressLine2).trim() : '',
+      city: requestData.city ? String(requestData.city).trim() : '',
+      state: requestData.state ? String(requestData.state).trim() : '',
+      pincode: requestData.pincode ? String(requestData.pincode).trim() : '',
+      country: requestData.country ? String(requestData.country).trim() : 'India',
+      languagePreference: requestData.languagePreference || 'ta',
+      prayerRequest: requestData.prayerRequest ? String(requestData.prayerRequest).trim() : '',
       status: 'pending',
       createdAt: nowIso,
       createdAtTimestamp: serverTimestamp(),
-      userId: requestData.userId || auth.currentUser?.uid || null,
+      userId: requestData.userId || auth.currentUser?.uid || '',
+    };
+
+    // Strict guard: strip any remaining undefined properties
+    Object.keys(cleanPayload).forEach((key) => {
+      if (cleanPayload[key] === undefined) {
+        delete cleanPayload[key];
+      }
     });
+
+    const docRef = await addDoc(bookletCol, cleanPayload);
 
     // Cache locally for the user
     if (typeof window !== 'undefined') {
@@ -428,7 +448,7 @@ export async function submitBookletRequest(
         const list = existing ? JSON.parse(existing) : [];
         list.unshift({
           id: docRef.id,
-          ...requestData,
+          ...cleanPayload,
           status: 'pending',
           createdAt: nowIso,
         });
@@ -503,9 +523,13 @@ export async function updateBookletRequestInFirestore(
   try {
     const ref = doc(db, 'booklet_requests', requestId);
     const payload: any = {
-      ...updates,
       updatedAt: serverTimestamp(),
     };
+    for (const [key, val] of Object.entries(updates)) {
+      if (val !== undefined) {
+        payload[key] = val;
+      }
+    }
     if (updates.status === 'dispatched' && !updates.dispatchedAt) {
       payload.dispatchedAt = new Date().toISOString();
     }
