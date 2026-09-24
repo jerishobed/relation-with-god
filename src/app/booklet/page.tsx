@@ -272,8 +272,8 @@ export default function BookletPage() {
                 </div>
                 <div className="flex items-start gap-2">
                   <BookOpen className="w-3.5 h-3.5 text-sanctuary-400 mt-0.5 shrink-0" />
-                  <span className="capitalize">
-                    Language Edition: {submittedRequest.languagePreference === 'ta' ? 'தமிழ் (Tamil)' : submittedRequest.languagePreference === 'en' ? 'English' : 'Bilingual'}
+                  <span>
+                    Language Edition: தமிழ் (Tamil Edition)
                   </span>
                 </div>
               </div>
@@ -292,14 +292,14 @@ export default function BookletPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <a
                 href={`https://wa.me/919442418286?text=${encodeURIComponent(
-                  `Praise the Lord Brother Jerish! I have submitted a free hardcopy booklet request on Relation With God.\n\nName: ${submittedRequest.fullName}\nPhone: ${submittedRequest.phoneNumber}\nCity: ${submittedRequest.city}\nRef ID: RWG-BK-${submittedRequest.id.slice(0, 8).toUpperCase()}`
+                  `Praise the Lord! I have submitted a free hardcopy booklet request on Relation With God.\n\nName: ${submittedRequest.fullName}\nPhone: ${submittedRequest.phoneNumber}\nCity: ${submittedRequest.city}\nRef ID: RWG-BK-${submittedRequest.id.slice(0, 8).toUpperCase()}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md transition-all active:scale-95"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>{isTamil ? 'WhatsApp-ல் தகவல் அனுப்ப' : 'Connect with Bro. Jerish on WhatsApp'}</span>
+                <span>{isTamil ? 'WhatsApp-ல் தகவல் அனுப்ப' : 'Connect on WhatsApp'}</span>
               </a>
 
               <Link
@@ -407,7 +407,7 @@ export default function BookletPage() {
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                     <span>
-                      <strong>Prepared with Prayer:</strong> Compiled by Brother J Jerish Obed (Founder).
+                      <strong>Prepared with Prayer:</strong> Compiled with dedication for your daily spiritual walk.
                     </span>
                   </div>
                 </div>
@@ -417,12 +417,12 @@ export default function BookletPage() {
                   <div className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-gold-600" />
                     <div>
-                      <p className="font-semibold">Questions? Contact Founder</p>
+                      <p className="font-semibold">Questions? Contact Us</p>
                       <p className="text-[11px] text-sanctuary-600 dark:text-sanctuary-400">+91 9442418286</p>
                     </div>
                   </div>
                   <a
-                    href="https://wa.me/919442418286?text=Hi%20Brother%20Jerish,%20I%20would%20like%20to%20know%20more%20about%20the%20Relation%20With%20God%20hardcopy%20booklet."
+                    href="https://wa.me/919442418286?text=Hi,%20I%20would%20like%20to%20know%20more%20about%20the%20Relation%20With%20God%20hardcopy%20booklet."
                     target="_blank"
                     rel="noopener noreferrer"
                     className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] transition-colors"
@@ -581,42 +581,16 @@ export default function BookletPage() {
 
                     <div>
                       <label className="block text-xs font-semibold text-sanctuary-700 dark:text-sanctuary-300 mb-1.5">
-                        {isTamil ? 'மொழி விருப்பம் (Language Edition)' : 'Language Edition'}
+                        {isTamil ? 'புத்தக மொழி பதிப்பு' : 'Booklet Edition Language'}
                       </label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setLanguagePreference('ta')}
-                          className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all text-center ${
-                            languagePreference === 'ta'
-                              ? 'bg-gold-500 text-white border-gold-600 shadow-sm'
-                              : 'bg-sanctuary-50 dark:bg-sanctuary-800 border-sanctuary-200 dark:border-sanctuary-700 text-sanctuary-700 dark:text-sanctuary-300'
-                          }`}
-                        >
-                          தமிழ்
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setLanguagePreference('en')}
-                          className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all text-center ${
-                            languagePreference === 'en'
-                              ? 'bg-gold-500 text-white border-gold-600 shadow-sm'
-                              : 'bg-sanctuary-50 dark:bg-sanctuary-800 border-sanctuary-200 dark:border-sanctuary-700 text-sanctuary-700 dark:text-sanctuary-300'
-                          }`}
-                        >
-                          English
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setLanguagePreference('bilingual')}
-                          className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all text-center ${
-                            languagePreference === 'bilingual'
-                              ? 'bg-gold-500 text-white border-gold-600 shadow-sm'
-                              : 'bg-sanctuary-50 dark:bg-sanctuary-800 border-sanctuary-200 dark:border-sanctuary-700 text-sanctuary-700 dark:text-sanctuary-300'
-                          }`}
-                        >
-                          Both
-                        </button>
+                      <div className="py-2.5 px-3.5 rounded-xl bg-gold-50/80 dark:bg-sanctuary-800 border border-gold-300 dark:border-gold-700/60 text-xs font-bold text-sanctuary-900 dark:text-sanctuary-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          <span className="text-sacred-800 dark:text-gold-300 font-semibold">தமிழ் (Tamil Edition)</span>
+                        </div>
+                        <span className="px-2 py-0.5 rounded-full bg-gold-500/20 text-gold-700 dark:text-gold-300 text-[10px] font-bold uppercase">
+                          அச்சுப் புத்தகம்
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -708,8 +682,8 @@ export default function BookletPage() {
                   <div>
                     <label className="block text-xs font-semibold text-sanctuary-700 dark:text-sanctuary-300 mb-1.5">
                       {isTamil
-                        ? 'ஜெபக் குறிப்பு அல்லது வாழ்த்து (Prayer Request / Note for Bro. Jerish)'
-                        : 'Personal Prayer Request or Message to Bro. Jerish (Optional)'}
+                        ? 'ஜெபக் குறிப்பு அல்லது கருத்து (Prayer Request / Note - Optional)'
+                        : 'Personal Prayer Request or Message (Optional)'}
                     </label>
                     <textarea
                       rows={2}

@@ -1104,7 +1104,7 @@ export default function AdminPage() {
 
                         <a
                           href={`https://wa.me/91${req.phoneNumber.replace(/^0+/, '')}?text=${encodeURIComponent(
-                            `Praise the Lord ${req.fullName}! This is Brother Jerish from Relation With God regarding your free 365-Day Chronological Bible Reading Booklet.`
+                            `Praise the Lord ${req.fullName}! This is from Relation With God Ministries regarding your free 365-Day Chronological Bible Reading Booklet.`
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
