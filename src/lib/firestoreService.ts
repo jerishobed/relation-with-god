@@ -4,6 +4,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   collection,
   getDocs,
   serverTimestamp,
@@ -12,7 +13,7 @@ import {
   orderBy,
   limit,
 } from 'firebase/firestore';
-import { UserProfile, UserProgress, AdminAudienceStats, BroadcastAnnouncement } from '@/types';
+import { UserProfile, UserProgress, AdminAudienceStats, BroadcastAnnouncement, BookletRequest } from '@/types';
 import { createFreshProgress } from './storage';
 
 /**
@@ -400,5 +401,135 @@ export async function getVisitorMetricsFromFirestore(): Promise<VisitorMetrics> 
       desktopVisits: 0,
       recentVisits: [],
     };
+  }
+}
+
+/**
+ * Submit a request for a free hardcopy booklet to /booklet_requests
+ */
+export async function submitBookletRequest(
+  requestData: Omit<BookletRequest, 'id' | 'status' | 'createdAt'>
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  try {
+    const bookletCol = collection(db, 'booklet_requests');
+    const nowIso = new Date().toISOString();
+    const docRef = await addDoc(bookletCol, {
+      ...requestData,
+      status: 'pending',
+      createdAt: nowIso,
+      createdAtTimestamp: serverTimestamp(),
+      userId: requestData.userId || auth.currentUser?.uid || null,
+    });
+
+    // Cache locally for the user
+    if (typeof window !== 'undefined') {
+      try {
+        const existing = localStorage.getItem('rwg_my_booklet_requests');
+        const list = existing ? JSON.parse(existing) : [];
+        list.unshift({
+          id: docRef.id,
+          ...requestData,
+          status: 'pending',
+          createdAt: nowIso,
+        });
+        localStorage.setItem('rwg_my_booklet_requests', JSON.stringify(list.slice(0, 10)));
+      } catch {}
+    }
+
+    return { success: true, id: docRef.id };
+  } catch (err: any) {
+    console.error('Error submitting booklet request:', err);
+    return { success: false, error: err?.message || 'Failed to submit request' };
+  }
+}
+
+/**
+ * Fetch all booklet requests for Admin Console (/admin)
+ */
+export async function getBookletRequestsFromFirestore(): Promise<BookletRequest[]> {
+  try {
+    const bookletCol = collection(db, 'booklet_requests');
+    const snap = await getDocs(bookletCol);
+    const requests: BookletRequest[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      let createdStr = data.createdAt;
+      if (!createdStr && data.createdAtTimestamp?.toDate) {
+        createdStr = data.createdAtTimestamp.toDate().toISOString();
+      } else if (!createdStr) {
+        createdStr = new Date().toISOString();
+      }
+
+      requests.push({
+        id: d.id,
+        fullName: data.fullName || 'Believer',
+        phoneNumber: data.phoneNumber || '',
+        email: data.email || '',
+        addressLine1: data.addressLine1 || '',
+        addressLine2: data.addressLine2 || '',
+        city: data.city || '',
+        state: data.state || '',
+        pincode: data.pincode || '',
+        country: data.country || 'India',
+        languagePreference: data.languagePreference || 'ta',
+        prayerRequest: data.prayerRequest || '',
+        status: data.status || 'pending',
+        trackingNumber: data.trackingNumber || '',
+        courierPartner: data.courierPartner || '',
+        adminNotes: data.adminNotes || '',
+        userId: data.userId || null,
+        createdAt: createdStr,
+        dispatchedAt: data.dispatchedAt,
+        deliveredAt: data.deliveredAt,
+      });
+    });
+
+    // Sort descending by createdAt
+    requests.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return requests;
+  } catch (err) {
+    console.warn('Error fetching booklet requests:', err);
+    return [];
+  }
+}
+
+/**
+ * Update booklet request status, tracking number, notes, etc.
+ */
+export async function updateBookletRequestInFirestore(
+  requestId: string,
+  updates: Partial<BookletRequest>
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const ref = doc(db, 'booklet_requests', requestId);
+    const payload: any = {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    };
+    if (updates.status === 'dispatched' && !updates.dispatchedAt) {
+      payload.dispatchedAt = new Date().toISOString();
+    }
+    if (updates.status === 'delivered' && !updates.deliveredAt) {
+      payload.deliveredAt = new Date().toISOString();
+    }
+    await updateDoc(ref, payload);
+    return { success: true };
+  } catch (err: any) {
+    console.error('Error updating booklet request:', err);
+    return { success: false, error: err?.message || 'Update failed' };
+  }
+}
+
+/**
+ * Delete a booklet request document (Admin only)
+ */
+export async function deleteBookletRequestFromFirestore(requestId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const ref = doc(db, 'booklet_requests', requestId);
+    await deleteDoc(ref);
+    return { success: true };
+  } catch (err: any) {
+    console.error('Error deleting booklet request:', err);
+    return { success: false, error: err?.message || 'Delete failed' };
   }
 }

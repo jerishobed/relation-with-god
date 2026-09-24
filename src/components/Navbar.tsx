@@ -14,6 +14,7 @@ import {
   User,
   ShieldCheck,
   Languages,
+  Gift,
 } from 'lucide-react';
 import { YoutubeIcon, InstagramIcon } from '@/components/SocialIcons';
 
@@ -80,6 +81,21 @@ export default function Navbar() {
               className="px-3 py-1.5 rounded-lg text-sm font-medium text-sanctuary-700 dark:text-sanctuary-300 hover:text-gold-600 transition-colors"
             >
               {isTamil ? 'வேதாகம உண்மைகள்' : 'Bible Facts'}
+            </Link>
+
+            <Link
+              href="/booklet"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                pathname.startsWith('/booklet')
+                  ? 'text-sacred-700 dark:text-gold-400 font-semibold bg-gold-100/50 dark:bg-sanctuary-800/60'
+                  : 'text-sanctuary-700 dark:text-sanctuary-300 hover:text-gold-600'
+              }`}
+            >
+              <Gift className="w-3.5 h-3.5 text-gold-600" />
+              <span>{isTamil ? 'இலவச புத்தகம்' : 'Free Booklet'}</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-gold-500 text-white text-[9px] font-extrabold uppercase">
+                Free
+              </span>
             </Link>
 
             {isAdmin && (

@@ -90,6 +90,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/booklet" className="hover:text-gold-600 transition-colors flex items-center gap-1.5 text-sacred-700 dark:text-gold-400 font-semibold">
+                  <span>🎁 Free Hardcopy Booklet</span>
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://www.bible.com"
                   target="_blank"

@@ -78,3 +78,28 @@ export interface AdminAudienceStats {
     completedAll: number;
   };
 }
+
+export type BookletRequestStatus = 'pending' | 'dispatched' | 'delivered' | 'cancelled';
+
+export interface BookletRequest {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  email?: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+  languagePreference: 'ta' | 'en' | 'bilingual';
+  prayerRequest?: string;
+  status: BookletRequestStatus;
+  trackingNumber?: string;
+  courierPartner?: string;
+  adminNotes?: string;
+  userId?: string | null;
+  createdAt: string; // ISO date string
+  dispatchedAt?: string;
+  deliveredAt?: string;
+}

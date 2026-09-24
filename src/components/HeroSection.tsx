@@ -173,6 +173,20 @@ export default function HeroSection() {
                 </div>
               </div>
 
+              {/* Free Hardcopy Request CTA */}
+              <div className="mt-3 text-center">
+                <Link
+                  href="/booklet"
+                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-sacred-700 via-sacred-800 to-gold-600 hover:from-sacred-800 hover:to-gold-700 text-white font-semibold text-xs shadow-md transition-all hover:scale-102 active:scale-98"
+                >
+                  <span>🎁 {isTamil ? 'இலவச அச்சுப் புத்தகம் பெறுக' : 'Request Free Hardcopy Booklet'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+                <p className="text-[10px] text-sanctuary-500 mt-1">
+                  {isTamil ? '100% இலவசம் • அஞ்சலில் உங்கள் இல்லத்திற்கே' : '100% Free • Delivered by Post'}
+                </p>
+              </div>
+
             </div>
           </div>
 

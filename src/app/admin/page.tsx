@@ -13,11 +13,15 @@ import {
   saveAnnouncementToFirestore,
   getAnnouncementFromFirestore,
   getVisitorMetricsFromFirestore,
+  getBookletRequestsFromFirestore,
+  updateBookletRequestInFirestore,
+  deleteBookletRequestFromFirestore,
   VisitorMetrics,
 } from '@/lib/firestoreService';
-import { BroadcastAnnouncement, AdminAudienceStats, UserProfile } from '@/types';
+import { BroadcastAnnouncement, AdminAudienceStats, UserProfile, BookletRequest, BookletRequestStatus } from '@/types';
 import {
   ShieldCheck,
+  User,
   Users,
   UserCheck,
   Activity,
@@ -41,6 +45,16 @@ import {
   Monitor,
   Share2,
   Compass,
+  Package,
+  Truck,
+  Gift,
+  Copy,
+  Check,
+  Phone,
+  MessageCircle,
+  Clock,
+  Trash2,
+  MapPin,
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -65,18 +79,29 @@ export default function AdminPage() {
   const [announcementUpdated, setAnnouncementUpdated] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Booklet Orders State
+  const [bookletRequests, setBookletRequests] = useState<BookletRequest[]>([]);
+  const [bookletFilter, setBookletFilter] = useState<'all' | 'pending' | 'dispatched' | 'delivered'>('all');
+  const [bookletSearch, setBookletSearch] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [editingTrackingId, setEditingTrackingId] = useState<string | null>(null);
+  const [trackingNumberInput, setTrackingNumberInput] = useState('');
+  const [courierPartnerInput, setCourierPartnerInput] = useState('India Post Speed Post');
+  const [isUpdatingBooklet, setIsUpdatingBooklet] = useState(false);
+
   // Admin login credentials state
   const [adminUsername, setAdminUsername] = useState('relationswithgod');
   const [adminPasscode, setAdminPasscode] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Fetch live audience and visitor metrics from Firestore
+  // Fetch live audience, visitors, and booklet orders from Firestore
   const fetchLiveAudience = useCallback(async () => {
     setIsLoadingLive(true);
     try {
-      const [audienceRes, visitorRes] = await Promise.all([
+      const [audienceRes, visitorRes, bookletRes] = await Promise.all([
         getAdminAudienceFromFirestore(),
         getVisitorMetricsFromFirestore(),
+        getBookletRequestsFromFirestore(),
       ]);
 
       if (audienceRes.users && audienceRes.users.length > 0) {
@@ -88,9 +113,10 @@ export default function AdminPage() {
         setUsers(local.users);
       }
       setVisitorMetrics(visitorRes);
+      setBookletRequests(bookletRes);
       setLastRefreshedAt(new Date().toLocaleTimeString());
     } catch (e) {
-      console.warn('Error loading live audience and visitor metrics from Firestore:', e);
+      console.warn('Error loading live admin data from Firestore:', e);
     } finally {
       setIsLoadingLive(false);
     }
@@ -168,6 +194,134 @@ export default function AdminPage() {
       u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Booklet handlers
+  const handleUpdateBookletStatus = async (requestId: string, status: BookletRequestStatus) => {
+    setIsUpdatingBooklet(true);
+    try {
+      await updateBookletRequestInFirestore(requestId, { status });
+      setBookletRequests((prev) =>
+        prev.map((r) => (r.id === requestId ? { ...r, status } : r))
+      );
+    } catch (e) {
+      console.error('Error updating status:', e);
+    } finally {
+      setIsUpdatingBooklet(false);
+    }
+  };
+
+  const handleSaveTracking = async (requestId: string) => {
+    if (!trackingNumberInput.trim()) return;
+    setIsUpdatingBooklet(true);
+    try {
+      await updateBookletRequestInFirestore(requestId, {
+        status: 'dispatched',
+        trackingNumber: trackingNumberInput.trim(),
+        courierPartner: courierPartnerInput.trim(),
+      });
+      setBookletRequests((prev) =>
+        prev.map((r) =>
+          r.id === requestId
+            ? {
+                ...r,
+                status: 'dispatched',
+                trackingNumber: trackingNumberInput.trim(),
+                courierPartner: courierPartnerInput.trim(),
+                dispatchedAt: new Date().toISOString(),
+              }
+            : r
+        )
+      );
+      setEditingTrackingId(null);
+      setTrackingNumberInput('');
+    } catch (e) {
+      console.error('Error saving tracking info:', e);
+    } finally {
+      setIsUpdatingBooklet(false);
+    }
+  };
+
+  const handleDeleteBooklet = async (requestId: string) => {
+    if (!window.confirm('Are you sure you want to permanently delete this booklet request?')) return;
+    try {
+      await deleteBookletRequestFromFirestore(requestId);
+      setBookletRequests((prev) => prev.filter((r) => r.id !== requestId));
+    } catch (e) {
+      alert('Failed to delete request.');
+    }
+  };
+
+  const handleCopyPostalLabel = (req: BookletRequest) => {
+    const label = `TO:\n${req.fullName}\n${req.addressLine1}${req.addressLine2 ? `\n${req.addressLine2}` : ''}\n${req.city}, ${req.state} - ${req.pincode}\n${req.country}\nPhone: ${req.phoneNumber}${req.email ? `\nEmail: ${req.email}` : ''}${req.prayerRequest ? `\nNote: ${req.prayerRequest}` : ''}`;
+    navigator.clipboard.writeText(label);
+    setCopiedId(req.id);
+    setTimeout(() => setCopiedId(null), 2500);
+  };
+
+  const handleExportBookletsCSV = () => {
+    const headers = [
+      'Request ID',
+      'Date',
+      'Full Name',
+      'Phone Number',
+      'Email',
+      'Address Line 1',
+      'Address Line 2',
+      'City',
+      'State',
+      'Pincode',
+      'Country',
+      'Language Edition',
+      'Status',
+      'Courier Partner',
+      'Tracking Number',
+      'Prayer Request / Notes',
+    ];
+    const rows = bookletRequests.map((r) => [
+      `"RWG-BK-${r.id.slice(0, 8).toUpperCase()}"`,
+      `"${r.createdAt.split('T')[0]}"`,
+      `"${r.fullName.replace(/"/g, '""')}"`,
+      `"${r.phoneNumber}"`,
+      `"${r.email || ''}"`,
+      `"${r.addressLine1.replace(/"/g, '""')}"`,
+      `"${(r.addressLine2 || '').replace(/"/g, '""')}"`,
+      `"${r.city}"`,
+      `"${r.state}"`,
+      `"${r.pincode}"`,
+      `"${r.country}"`,
+      `"${r.languagePreference}"`,
+      `"${r.status}"`,
+      `"${r.courierPartner || ''}"`,
+      `"${r.trackingNumber || ''}"`,
+      `"${(r.prayerRequest || '').replace(/"/g, '""')}"`,
+    ]);
+
+    const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `relation_with_god_booklet_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const filteredBookletRequests = bookletRequests.filter((r) => {
+    const matchesFilter = bookletFilter === 'all' || r.status === bookletFilter;
+    const q = bookletSearch.toLowerCase();
+    const matchesSearch =
+      !q ||
+      r.fullName.toLowerCase().includes(q) ||
+      r.phoneNumber.toLowerCase().includes(q) ||
+      r.city.toLowerCase().includes(q) ||
+      r.state.toLowerCase().includes(q) ||
+      r.pincode.toLowerCase().includes(q);
+    return matchesFilter && matchesSearch;
+  });
+
+  const bookletPendingCount = bookletRequests.filter((r) => r.status === 'pending').length;
+  const bookletDispatchedCount = bookletRequests.filter((r) => r.status === 'dispatched').length;
+  const bookletDeliveredCount = bookletRequests.filter((r) => r.status === 'delivered').length;
 
   // If not logged in as jerishbtech, render the secure Founder Gate
   if (!isAdmin) {
@@ -742,6 +896,382 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Free Hardcopy Booklet Requests & Dispatches Console */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-sanctuary-900 border border-sanctuary-200 dark:border-sanctuary-800 shadow-sm space-y-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-100 dark:bg-sanctuary-800 text-gold-800 dark:text-gold-300 text-xs font-bold mb-1.5">
+                <Gift className="w-3.5 h-3.5 text-gold-600" />
+                <span>Free Booklet Postal Ministry</span>
+              </div>
+              <h3 className="font-cinzel text-lg sm:text-xl font-bold text-sanctuary-900 dark:text-sanctuary-100 flex items-center gap-2">
+                <Package className="w-5 h-5 text-sacred-600" />
+                <span>Hardcopy Booklet Orders & Dispatches</span>
+              </h3>
+              <p className="text-xs text-sanctuary-500 mt-0.5">
+                Manage postal requests, copy shipping addresses for label printing, and update tracking details.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={handleExportBookletsCSV}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-sanctuary-300 dark:border-sanctuary-700 bg-white dark:bg-sanctuary-800 hover:bg-gold-50 text-xs font-semibold text-sanctuary-700 dark:text-sanctuary-200 transition-colors shadow-sm"
+              >
+                <Download className="w-3.5 h-3.5 text-gold-600" />
+                <span>Export Orders (CSV)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Metrics Bar for Booklet Orders */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-2xl bg-sanctuary-50 dark:bg-sanctuary-800/50 border border-sanctuary-200 dark:border-sanctuary-700">
+              <span className="text-[11px] font-bold text-sanctuary-500 uppercase tracking-wider block">
+                Total Requests
+              </span>
+              <span className="font-cinzel text-xl font-bold text-sanctuary-900 dark:text-sanctuary-100">
+                {bookletRequests.length}
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60">
+              <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider block">
+                Pending Dispatch ⏳
+              </span>
+              <span className="font-cinzel text-xl font-bold text-amber-900 dark:text-amber-200">
+                {bookletPendingCount}
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60">
+              <span className="text-[11px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider block">
+                Dispatched / In Transit 📦
+              </span>
+              <span className="font-cinzel text-xl font-bold text-blue-900 dark:text-blue-200">
+                {bookletDispatchedCount}
+              </span>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60">
+              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider block">
+                Delivered ✅
+              </span>
+              <span className="font-cinzel text-xl font-bold text-emerald-900 dark:text-emerald-200">
+                {bookletDeliveredCount}
+              </span>
+            </div>
+          </div>
+
+          {/* Search & Filter Tabs */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-sanctuary-100 dark:bg-sanctuary-800 text-xs font-semibold overflow-x-auto">
+              <button
+                onClick={() => setBookletFilter('all')}
+                className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                  bookletFilter === 'all'
+                    ? 'bg-white dark:bg-sanctuary-900 text-sanctuary-900 dark:text-sanctuary-100 shadow-sm'
+                    : 'text-sanctuary-600 dark:text-sanctuary-400 hover:text-sanctuary-900'
+                }`}
+              >
+                All ({bookletRequests.length})
+              </button>
+              <button
+                onClick={() => setBookletFilter('pending')}
+                className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                  bookletFilter === 'pending'
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'text-sanctuary-600 dark:text-sanctuary-400 hover:text-amber-600'
+                }`}
+              >
+                Pending ({bookletPendingCount})
+              </button>
+              <button
+                onClick={() => setBookletFilter('dispatched')}
+                className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                  bookletFilter === 'dispatched'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-sanctuary-600 dark:text-sanctuary-400 hover:text-blue-600'
+                }`}
+              >
+                Dispatched ({bookletDispatchedCount})
+              </button>
+              <button
+                onClick={() => setBookletFilter('delivered')}
+                className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
+                  bookletFilter === 'delivered'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-sanctuary-600 dark:text-sanctuary-400 hover:text-emerald-600'
+                }`}
+              >
+                Delivered ({bookletDeliveredCount})
+              </button>
+            </div>
+
+            <div className="relative sm:w-72">
+              <Search className="w-4 h-4 text-sanctuary-400 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                value={bookletSearch}
+                onChange={(e) => setBookletSearch(e.target.value)}
+                placeholder="Search recipient, phone, city..."
+                className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-sanctuary-200 dark:border-sanctuary-700 bg-sanctuary-50 dark:bg-sanctuary-800 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500 text-sanctuary-900 dark:text-sanctuary-100"
+              />
+            </div>
+          </div>
+
+          {/* Orders List / Cards */}
+          {filteredBookletRequests.length === 0 ? (
+            <div className="py-12 text-center rounded-2xl border border-dashed border-sanctuary-300 dark:border-sanctuary-700 space-y-2">
+              <Gift className="w-8 h-8 text-sanctuary-400 mx-auto" />
+              <p className="text-sm font-semibold text-sanctuary-600 dark:text-sanctuary-300">
+                No booklet requests match your filter.
+              </p>
+              <p className="text-xs text-sanctuary-400">
+                Visitors can request a booklet at <Link href="/booklet" className="text-gold-600 underline">relationswithgod.in/booklet</Link>.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredBookletRequests.map((req) => (
+                <div
+                  key={req.id}
+                  className="p-4 sm:p-5 rounded-2xl bg-sanctuary-50/70 dark:bg-sanctuary-800/40 border border-sanctuary-200 dark:border-sanctuary-700/80 hover:border-gold-400/60 transition-all space-y-3"
+                >
+                  {/* Top Bar: Reference ID, Date, Status */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-sanctuary-200/70 dark:border-sanctuary-700/70 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-sacred-800 dark:text-gold-400 bg-sacred-100 dark:bg-sacred-950/80 px-2 py-0.5 rounded">
+                        RWG-BK-{req.id.slice(0, 8).toUpperCase()}
+                      </span>
+                      <span className="text-[11px] text-sanctuary-400">
+                        {new Date(req.createdAt).toLocaleDateString()} {new Date(req.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase bg-gold-100 dark:bg-sanctuary-800 text-gold-800 dark:text-gold-300">
+                        {req.languagePreference === 'ta' ? 'தமிழ் (Tamil)' : req.languagePreference === 'en' ? 'English' : 'Bilingual'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={req.status}
+                        disabled={isUpdatingBooklet}
+                        onChange={(e) => handleUpdateBookletStatus(req.id, e.target.value as BookletRequestStatus)}
+                        className={`text-xs font-bold px-2.5 py-1 rounded-xl border focus:outline-none transition-colors ${
+                          req.status === 'delivered'
+                            ? 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800'
+                            : req.status === 'dispatched'
+                            ? 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800'
+                            : 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800'
+                        }`}
+                      >
+                        <option value="pending">Pending ⏳</option>
+                        <option value="dispatched">Dispatched 📦</option>
+                        <option value="delivered">Delivered ✅</option>
+                        <option value="cancelled">Cancelled ❌</option>
+                      </select>
+
+                      <button
+                        onClick={() => handleDeleteBooklet(req.id)}
+                        className="p-1.5 rounded-lg text-sanctuary-400 hover:text-red-600 transition-colors"
+                        title="Delete request"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Order Details Body */}
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                    
+                    {/* Recipient Details */}
+                    <div className="md:col-span-4 space-y-1.5">
+                      <div className="font-semibold text-sm text-sanctuary-900 dark:text-sanctuary-100 flex items-center gap-1.5">
+                        <User className="w-3.5 h-3.5 text-gold-600" />
+                        <span>{req.fullName}</span>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                        <a
+                          href={`tel:${req.phoneNumber}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sanctuary-100 dark:bg-sanctuary-800 hover:bg-gold-100 text-xs font-mono font-medium text-sanctuary-800 dark:text-sanctuary-200 transition-colors"
+                        >
+                          <Phone className="w-3 h-3 text-gold-600" />
+                          <span>{req.phoneNumber}</span>
+                        </a>
+
+                        <a
+                          href={`https://wa.me/91${req.phoneNumber.replace(/^0+/, '')}?text=${encodeURIComponent(
+                            `Praise the Lord ${req.fullName}! This is Brother Jerish from Relation With God regarding your free 365-Day Chronological Bible Reading Booklet.`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold transition-colors"
+                          title="Message on WhatsApp"
+                        >
+                          <MessageCircle className="w-3 h-3" />
+                          <span>WhatsApp</span>
+                        </a>
+                      </div>
+
+                      {req.email && (
+                        <p className="text-xs text-sanctuary-500 truncate">{req.email}</p>
+                      )}
+                    </div>
+
+                    {/* Postal Address */}
+                    <div className="md:col-span-5 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-sanctuary-500 uppercase tracking-wider flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-sacred-600" />
+                          <span>Postal Address</span>
+                        </span>
+
+                        <button
+                          onClick={() => handleCopyPostalLabel(req)}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-gold-100 dark:bg-sanctuary-700 text-gold-900 dark:text-gold-200 text-[10px] font-bold hover:bg-gold-200 transition-colors"
+                          title="Copy Full Postal Label"
+                        >
+                          {copiedId === req.id ? (
+                            <>
+                              <Check className="w-3 h-3 text-emerald-600" />
+                              <span className="text-emerald-700 font-bold">Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Copy Label</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="text-xs text-sanctuary-800 dark:text-sanctuary-200 leading-relaxed font-sans bg-white/70 dark:bg-sanctuary-900/60 p-2.5 rounded-xl border border-sanctuary-200/60 dark:border-sanctuary-700/60">
+                        <p className="font-semibold">{req.addressLine1}</p>
+                        {req.addressLine2 && <p>{req.addressLine2}</p>}
+                        <p className="font-medium text-sacred-800 dark:text-gold-400">
+                          {req.city}, {req.state} - <span className="font-mono font-bold">{req.pincode}</span>
+                        </p>
+                        <p className="text-[10px] text-sanctuary-400">{req.country}</p>
+                      </div>
+
+                      {req.prayerRequest && (
+                        <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 text-[11px] text-amber-900 dark:text-amber-200 italic border border-amber-200/50 dark:border-amber-900/50">
+                          💬 &ldquo;{req.prayerRequest}&rdquo;
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Shipping & Tracking Status Column */}
+                    <div className="md:col-span-3 space-y-2">
+                      <span className="text-[11px] font-bold text-sanctuary-500 uppercase tracking-wider flex items-center gap-1">
+                        <Truck className="w-3 h-3 text-blue-600" />
+                        <span>Dispatch & Tracking</span>
+                      </span>
+
+                      {editingTrackingId === req.id ? (
+                        <div className="p-2.5 rounded-xl bg-white dark:bg-sanctuary-900 border border-blue-300 dark:border-blue-800 space-y-2 text-xs">
+                          <div>
+                            <label className="block text-[10px] font-semibold text-sanctuary-500 mb-0.5">
+                              Courier Partner
+                            </label>
+                            <input
+                              type="text"
+                              value={courierPartnerInput}
+                              onChange={(e) => setCourierPartnerInput(e.target.value)}
+                              placeholder="India Post Speed Post"
+                              className="w-full px-2 py-1 rounded border border-sanctuary-200 dark:border-sanctuary-700 bg-sanctuary-50 dark:bg-sanctuary-800 text-xs"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[10px] font-semibold text-sanctuary-500 mb-0.5">
+                              Tracking / Consignment #
+                            </label>
+                            <input
+                              type="text"
+                              value={trackingNumberInput}
+                              onChange={(e) => setTrackingNumberInput(e.target.value)}
+                              placeholder="e.g. EM123456789IN"
+                              className="w-full px-2 py-1 rounded border border-sanctuary-200 dark:border-sanctuary-700 bg-sanctuary-50 dark:bg-sanctuary-800 text-xs font-mono"
+                            />
+                          </div>
+
+                          <div className="flex items-center gap-1.5 pt-1">
+                            <button
+                              onClick={() => handleSaveTracking(req.id)}
+                              disabled={isUpdatingBooklet}
+                              className="px-2.5 py-1 rounded bg-blue-600 text-white font-bold text-[10px] hover:bg-blue-700 transition-colors"
+                            >
+                              Save & Dispatch
+                            </button>
+                            <button
+                              onClick={() => setEditingTrackingId(null)}
+                              className="px-2 py-1 rounded bg-sanctuary-200 dark:bg-sanctuary-700 text-sanctuary-700 dark:text-sanctuary-300 text-[10px]"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="p-2.5 rounded-xl bg-white/70 dark:bg-sanctuary-900/60 border border-sanctuary-200/60 dark:border-sanctuary-700/60 text-xs space-y-1.5">
+                          {req.trackingNumber ? (
+                            <>
+                              <p className="font-semibold text-sanctuary-900 dark:text-sanctuary-100">
+                                {req.courierPartner || 'India Post Speed Post'}
+                              </p>
+                              <p className="font-mono text-xs text-blue-700 dark:text-blue-300 font-bold select-all">
+                                {req.trackingNumber}
+                              </p>
+                              <div className="flex items-center gap-2 pt-1">
+                                <a
+                                  href={`https://www.indiapost.gov.in/_layouts/15/dpt.cpt.tracking/trackconsignment.aspx`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] text-blue-600 hover:underline flex items-center gap-0.5"
+                                >
+                                  <span>India Post Tracking</span>
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                </a>
+                                <button
+                                  onClick={() => {
+                                    setEditingTrackingId(req.id);
+                                    setTrackingNumberInput(req.trackingNumber || '');
+                                    setCourierPartnerInput(req.courierPartner || 'India Post Speed Post');
+                                  }}
+                                  className="text-[10px] text-sanctuary-400 hover:text-sanctuary-700 underline"
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="space-y-1.5">
+                              <p className="text-[11px] text-sanctuary-400 italic">No tracking added yet</p>
+                              <button
+                                onClick={() => {
+                                  setEditingTrackingId(req.id);
+                                  setTrackingNumberInput('');
+                                  setCourierPartnerInput('India Post Speed Post');
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-[10px] font-semibold hover:bg-blue-100 transition-colors"
+                              >
+                                <Truck className="w-3 h-3" />
+                                <span>Add Tracking #</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Resources & Source Document Card */}

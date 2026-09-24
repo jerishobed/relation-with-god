@@ -19,6 +19,9 @@ import {
   Layers,
   Clock,
   Compass,
+  Gift,
+  Truck,
+  Package,
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -135,6 +138,64 @@ export default function HomePage() {
 
       {/* Bible Facts Section */}
       <BibleFactsSection />
+
+      {/* Free Hardcopy Booklet Invitation Section */}
+      <section className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-sacred-900 via-sacred-950 to-sanctuary-950 text-white border-2 border-gold-500/40 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+            <div className="lg:col-span-8 space-y-4">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-xs font-bold">
+                <Gift className="w-3.5 h-3.5 text-gold-400" />
+                <span>Complimentary Ministry Gift</span>
+              </div>
+
+              <h3 className="font-cinzel text-2xl sm:text-4xl font-extrabold tracking-tight">
+                {isTamil
+                  ? 'இலவச வேதாகம காலவரிசை அட்டவணை புத்தகம்'
+                  : 'Receive The Free 365-Day Printed Reading Guide'}
+              </h3>
+
+              <p className="text-sm sm:text-base text-sanctuary-200 max-w-2xl leading-relaxed">
+                {isTamil
+                  ? 'பரிசுத்த வேதாகமத்தை 365 நாட்களில் காலவரிசையில் வாசித்து முடிக்க உதவும் முழுமையான அச்சுப் புத்தகம் (Hardcopy Booklet). உங்கள் இல்லத்திற்கே இந்திய அஞ்சல் மூலம் 100% இலவசமாக அனுப்பி வைக்கப்படுகிறது.'
+                  : 'Prefer reading with a physical booklet beside your Bible? Request your free printed 365-day chronological reading plan with daily chapter checkmarks, mailed right to your door with zero shipping fees.'}
+              </p>
+
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <Link
+                  href="/booklet"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-gold-400 via-gold-500 to-amber-500 text-sacred-950 font-bold text-xs sm:text-sm shadow-glow-gold hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+                >
+                  <Gift className="w-4 h-4" />
+                  <span>{isTamil ? 'இலவச புத்தகத்திற்கு விண்ணப்பிக்கவும்' : 'Request Free Hardcopy Booklet'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+
+                <div className="flex items-center gap-2 text-xs text-gold-300/90 font-medium">
+                  <Truck className="w-4 h-4 text-emerald-400" />
+                  <span>{isTamil ? 'அஞ்சல் கட்டணமும் இலவசம்' : 'Zero Postal Charges • Hand-packed with prayer'}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-4 flex justify-center">
+              <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center space-y-2 max-w-[240px]">
+                <div className="w-12 h-12 rounded-xl bg-gold-400/20 text-gold-300 flex items-center justify-center mx-auto">
+                  <Package className="w-6 h-6" />
+                </div>
+                <p className="font-cinzel text-xs font-bold text-gold-200">
+                  Physical Hardcopy
+                </p>
+                <p className="text-[11px] text-sanctuary-300 leading-tight">
+                  Complete 1,163 chapters, dispensations timeline & reading check-grid.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* YouTube & Instagram Social Hub */}
       <SocialHubSection />

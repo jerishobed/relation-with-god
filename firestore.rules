@@ -40,5 +40,11 @@ service cloud.firestore {
       allow create: if true;
       allow read, delete: if isJerishAdmin();
     }
+
+    // Free hardcopy booklet requests
+    match /booklet_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isJerishAdmin();
+    }
   }
 }
