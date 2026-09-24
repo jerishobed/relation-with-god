@@ -159,8 +159,8 @@ export default function HomePage() {
 
               <p className="text-sm sm:text-base text-sanctuary-200 max-w-2xl leading-relaxed">
                 {isTamil
-                  ? 'பரிசுத்த வேதாகமத்தை 365 நாட்களில் காலவரிசையில் வாசித்து முடிக்க உதவும் முழுமையான அச்சுப் புத்தகம் (Hardcopy Booklet). உங்கள் இல்லத்திற்கே இந்திய அஞ்சல் மூலம் 100% இலவசமாக அனுப்பி வைக்கப்படுகிறது.'
-                  : 'Prefer reading with a physical booklet beside your Bible? Request your free printed 365-day chronological reading plan with daily chapter checkmarks, mailed right to your door with zero shipping fees.'}
+                  ? 'பரிசுத்த வேதாகமத்தை 365 நாட்களில் காலவரிசையில் வாசித்து முடிக்க உதவும் முழுமையான அச்சுப் புத்தகம் (Hardcopy Booklet). உங்கள் இல்லத்திற்கே இந்திய அஞ்சல் மூலம் அனுப்பி வைக்கப்படுகிறது.'
+                  : 'Prefer reading with a physical booklet beside your Bible? Request your printed 365-day chronological reading plan with daily chapter checkmarks, mailed right to your door.'}
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-2">
@@ -172,11 +172,6 @@ export default function HomePage() {
                   <span>{isTamil ? 'இலவச புத்தகத்திற்கு விண்ணப்பிக்கவும்' : 'Request Free Hardcopy Booklet'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-
-                <div className="flex items-center gap-2 text-xs text-gold-300/90 font-medium">
-                  <Truck className="w-4 h-4 text-emerald-400" />
-                  <span>{isTamil ? 'அஞ்சல் கட்டணமும் இலவசம்' : 'Zero Postal Charges • Hand-packed with prayer'}</span>
-                </div>
               </div>
             </div>
 

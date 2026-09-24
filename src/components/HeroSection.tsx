@@ -182,9 +182,6 @@ export default function HeroSection() {
                   <span>🎁 {isTamil ? 'இலவச அச்சுப் புத்தகம் பெறுக' : 'Request Free Hardcopy Booklet'}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
-                <p className="text-[10px] text-sanctuary-500 mt-1">
-                  {isTamil ? '100% இலவசம் • அஞ்சலில் உங்கள் இல்லத்திற்கே' : '100% Free • Delivered by Post'}
-                </p>
               </div>
 
             </div>

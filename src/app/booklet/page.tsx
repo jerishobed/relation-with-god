@@ -209,10 +209,6 @@ export default function BookletPage() {
             <span>←</span>
             <span>{isTamil ? 'முகப்புக்குத் திரும்பு' : 'Back to Home'}</span>
           </Link>
-          <div className="flex items-center gap-1 text-gold-600 dark:text-gold-400 font-semibold">
-            <Gift className="w-3.5 h-3.5" />
-            <span>100% Free Ministry Service</span>
-          </div>
         </div>
 
         {/* ========================================================= */}
@@ -368,8 +364,8 @@ export default function BookletPage() {
 
                   <p className="text-xs sm:text-sm text-sanctuary-600 dark:text-sanctuary-300 leading-relaxed">
                     {isTamil
-                      ? 'பரிசுத்த வேதாகமத்தை 365 நாட்களில் காலவரிசையில் வாசித்து முடிக்க உதவும் அழகான அச்சுப் புத்தகம் (Print Booklet). உங்கள் இல்லத்திற்கே இலவசமாக அனுப்பி வைக்கப்படுகிறது.'
-                      : 'A high quality printed physical guide containing the complete 365-day chronological Bible reading plan, daily chapter targets, and tick-mark progress records. Shipped to your doorstep 100% free.'}
+                      ? 'பரிசுத்த வேதாகமத்தை 365 நாட்களில் காலவரிசையில் வாசித்து முடிக்க உதவும் அழகான அச்சுப் புத்தகம் (Print Booklet). உங்கள் இல்லத்திற்கே அனுப்பி வைக்கப்படுகிறது.'
+                      : 'A high quality printed physical guide containing the complete 365-day chronological Bible reading plan, daily chapter targets, and tick-mark progress records, delivered to your doorstep.'}
                   </p>
                 </div>
 
@@ -493,9 +489,6 @@ export default function BookletPage() {
                     <span className="text-xs font-bold text-gold-600 dark:text-gold-400 uppercase tracking-wider flex items-center gap-1.5">
                       <Truck className="w-4 h-4" />
                       <span>{isTamil ? 'அஞ்சல் முகவரி படிவம்' : 'Postal Delivery Form'}</span>
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 font-bold text-[10px]">
-                      100% Free Shipping
                     </span>
                   </div>
 
@@ -722,16 +715,6 @@ export default function BookletPage() {
                         </>
                       )}
                     </button>
-                  </div>
-
-                  {/* Trust badge */}
-                  <div className="flex items-center justify-center gap-2 text-[11px] text-sanctuary-500 pt-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>
-                      {isTamil
-                        ? '100% இலவசம் • எந்தக் கட்டணமும் இல்லை • ஆசீர்வாதத்தோடு அனுப்பப்படும்'
-                        : '100% Free Ministry Initiative • No hidden shipping charges • Hand-packed with prayer'}
-                    </span>
                   </div>
 
                 </form>
