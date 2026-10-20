@@ -18,7 +18,9 @@ import {
   BookOpen,
   User,
   Shield,
+  ExternalLink,
 } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/SocialIcons';
 
 export default function DashboardPage() {
   const { user, progress, resetProgress, isAuthenticated, loading, openAuthModal } = useAuth();
@@ -94,6 +96,33 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* WhatsApp Community Fellowship Banner */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-600/10 to-teal-500/10 border border-emerald-500/30 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <WhatsAppIcon className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs sm:text-sm font-bold text-sanctuary-900 dark:text-sanctuary-100">
+                {isTamil ? 'அதிகாரப்பூர்வ WhatsApp குழுவில் இணையுங்கள்!' : 'Join our Official WhatsApp Community!'}
+              </p>
+              <p className="text-[11px] sm:text-xs text-sanctuary-600 dark:text-sanctuary-400">
+                {isTamil ? 'தினசரி நினைவூட்டல்கள், தியானங்கள் மற்றும் கூட்டு வாசிப்பு ஐக்கியம்' : 'Daily 15-minute reminders, chapter discussions & prayer fellowship'}
+              </p>
+            </div>
+          </div>
+          <a
+            href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm hover:shadow-md transition-all active:scale-95"
+          >
+            <WhatsAppIcon className="w-4 h-4" />
+            <span>{isTamil ? 'குழுவில் இணைய' : 'Join WhatsApp Group'}</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
         </div>
 
         {/* Compact Micro-Stats Bar (Only 45px tall!) */}

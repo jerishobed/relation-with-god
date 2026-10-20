@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Heart, Play, ExternalLink, Share2, Sparkles } from 'lucide-react';
-import { YoutubeIcon, InstagramIcon } from '@/components/SocialIcons';
+import { YoutubeIcon, InstagramIcon, WhatsAppIcon } from '@/components/SocialIcons';
 import { useTheme } from '@/lib/themeContext';
 
 export default function SocialHubSection() {
@@ -29,12 +29,64 @@ export default function SocialHubSection() {
           </p>
 
           <p className="text-sm text-sanctuary-600 dark:text-sanctuary-300 mt-3">
-            Join our growing community on YouTube and Instagram for daily spiritual encouragement, Bible reading reflections, and prayer.
+            Join our growing community on WhatsApp, YouTube, and Instagram for daily spiritual encouragement, Bible reading reflections, and fellowship.
           </p>
         </div>
 
         {/* Social Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          
+          {/* WhatsApp Community Card */}
+          <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-sanctuary-900 border border-sanctuary-200 dark:border-sanctuary-800 shadow-sm hover:shadow-xl hover:border-emerald-400/50 transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <WhatsAppIcon className="w-7 h-7" />
+                </div>
+                <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold border border-emerald-200/40">
+                  Daily Fellowship & Reminders
+                </span>
+              </div>
+
+              <h3 className="font-cinzel text-xl font-bold text-sanctuary-900 dark:text-sanctuary-100 mb-1">
+                WhatsApp Community
+              </h3>
+              <p className="text-sm text-emerald-600 font-semibold mb-3">
+                Relations with God
+              </p>
+
+              <p className="text-xs sm:text-sm text-sanctuary-600 dark:text-sanctuary-300 leading-relaxed mb-6">
+                Receive daily 15-minute Bible reading reminders, chapter discussions, reflections, and spiritual fellowship with fellow believers directly on WhatsApp.
+              </p>
+
+              {/* WhatsApp Preview Box */}
+              <div className="rounded-2xl bg-sanctuary-100 dark:bg-sanctuary-950 p-4 border border-sanctuary-200 dark:border-sanctuary-800 flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-md">
+                  <WhatsAppIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-sanctuary-900 dark:text-sanctuary-100">
+                    Official WhatsApp Group
+                  </p>
+                  <p className="text-[11px] text-sanctuary-500 dark:text-sanctuary-400">
+                    Join for daily encouragement
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <a
+              href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+              <span>Join WhatsApp Group</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
           
           {/* YouTube Card */}
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-sanctuary-900 border border-sanctuary-200 dark:border-sanctuary-800 shadow-sm hover:shadow-xl hover:border-red-400/50 transition-all duration-300 flex flex-col justify-between group">

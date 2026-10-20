@@ -16,7 +16,7 @@ import {
   Languages,
   Gift,
 } from 'lucide-react';
-import { YoutubeIcon, InstagramIcon } from '@/components/SocialIcons';
+import { YoutubeIcon, InstagramIcon, WhatsAppIcon } from '@/components/SocialIcons';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -116,6 +116,16 @@ export default function Navbar() {
           {/* Social Channels & Controls */}
           <div className="hidden lg:flex items-center gap-2">
             {/* Social Links */}
+            <a
+              href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
+              title="Join WhatsApp Community"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+            </a>
+
             <a
               href="https://www.youtube.com/@relationswithgod"
               target="_blank"
@@ -230,8 +240,18 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Quick Controls (Lang, Theme, Auth) */}
+          {/* Mobile Quick Controls (Lang, Theme, WhatsApp, Auth) */}
           <div className="flex items-center gap-1.5 md:hidden">
+            <a
+              href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+              title="Join WhatsApp Group"
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+            </a>
+
             <button
               onClick={() => setLang(lang === 'ta' ? 'en' : 'ta')}
               className="px-2 py-1 text-xs font-bold rounded-lg bg-sanctuary-100 dark:bg-sanctuary-800 text-gold-600 dark:text-gold-400"

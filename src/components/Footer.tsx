@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { BookOpen, Phone, Heart, ExternalLink, Shield } from 'lucide-react';
-import { YoutubeIcon, InstagramIcon } from '@/components/SocialIcons';
+import { YoutubeIcon, InstagramIcon, WhatsAppIcon } from '@/components/SocialIcons';
 export default function Footer() {
 
   return (
@@ -45,7 +45,17 @@ export default function Footer() {
               A dedicated spiritual platform guiding believers through the entire Holy Bible in chronological order across 365 days. Experience God’s unified story from Genesis to Revelation.
             </p>
 
-            <div className="pt-2 flex items-center gap-4">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
+              <a
+                href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold transition-colors"
+              >
+                <WhatsAppIcon className="w-4 h-4" />
+                <span>WhatsApp Group</span>
+              </a>
+
               <a
                 href="https://www.youtube.com/@relationswithgod"
                 target="_blank"
