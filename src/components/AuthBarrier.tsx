@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/authContext';
 import { useTheme } from '@/lib/themeContext';
+import InAppBrowserNotice from '@/components/InAppBrowserNotice';
 import {
   BookOpen,
   Sparkles,
@@ -20,7 +21,7 @@ interface AuthBarrierProps {
 }
 
 export default function AuthBarrier({ targetDescription }: AuthBarrierProps) {
-  const { loginWithGoogle, openAuthModal } = useAuth();
+  const { loginWithGoogle, loginWithGoogleRedirect, openAuthModal } = useAuth();
   const { lang } = useTheme();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -33,8 +34,25 @@ export default function AuthBarrier({ targetDescription }: AuthBarrierProps) {
     try {
       await loginWithGoogle();
     } catch (err: any) {
-      if (err?.code !== 'auth/popup-closed-by-user') {
-        setErrorMsg(err?.message || 'Google sign-in could not be completed.');
+      const code = err?.code || '';
+      const msg = err?.message || '';
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+        // User dismissed
+      } else if (code === 'auth/popup-blocked') {
+        setErrorMsg(isTamil ? 'உலாவியில் பாப்-அப் தடுக்கப்பட்டது. ரீடயரெக்ட் மூலம் முயற்சிக்கிறது...' : 'Pop-up was blocked. Attempting redirect sign-in...');
+        try {
+          await loginWithGoogleRedirect();
+        } catch {
+          setErrorMsg(isTamil ? 'உள்நுழைய முடியவில்லை. தயவுசெய்து Chrome அல்லது Safari-யில் திறக்கவும்.' : 'Could not complete Google sign-in. Please open in Chrome or Safari.');
+        }
+      } else if (code.includes('disallowed') || msg.includes('disallowed_useragent')) {
+        setErrorMsg(
+          isTamil
+            ? 'WhatsApp / Instagram உலாவியில் Google உள்நுழைவு தடை செய்யப்பட்டுள்ளது. 3 புள்ளிகளைத் தொட்டு "Open in Chrome" அல்லது "Open in Safari" தேர்ந்தெடுக்கவும்.'
+            : 'Google sign-in is blocked in this app browser. Tap the 3 dots (⋮ or ⋯) and select "Open in Chrome" or "Open in Safari".'
+        );
+      } else {
+        setErrorMsg(err?.message || (isTamil ? 'கூகிள் உள்நுழைவை முடிக்க முடியவில்லை.' : 'Google sign-in could not be completed.'));
       }
     } finally {
       setIsSigningIn(false);
@@ -123,6 +141,9 @@ export default function AuthBarrier({ targetDescription }: AuthBarrierProps) {
               </div>
             </div>
           </div>
+
+          {/* In-App Browser Guidance Banner */}
+          <InAppBrowserNotice className="text-left my-2" />
 
           {errorMsg && (
             <div className="p-3 rounded-xl bg-red-500/10 border border-red-400/30 text-xs text-red-600 dark:text-red-400">

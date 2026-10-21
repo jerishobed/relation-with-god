@@ -5,6 +5,8 @@ import { UserProfile, UserProgress } from '@/types';
 import { auth, googleProvider } from './firebase';
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
@@ -42,7 +44,8 @@ interface AuthContextType {
   isAuthModalOpen: boolean;
   openAuthModal: () => void;
   closeAuthModal: () => void;
-  loginWithGoogle: () => Promise<void>;
+  loginWithGoogle: (preferRedirect?: boolean) => Promise<void>;
+  loginWithGoogleRedirect: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (email: string, password: string, name: string) => Promise<void>;
   loginAdmin: (usernameOrEmail: string, passcode: string) => { success: boolean; error?: string };
@@ -65,6 +68,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Listen to Firebase Auth state
   useEffect(() => {
+    // 0. Check for pending redirect sign-in result (mobile & redirect fallback)
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setIsAuthModalOpen(false);
+        }
+      })
+      .catch((redirectErr: any) => {
+        console.warn('Firebase getRedirectResult error:', redirectErr);
+      });
+
     // Check initial local cached user while Firebase initializes
     const localUser = getStoredUser();
     if (localUser) {
@@ -159,17 +173,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
 
-  // 1. Google Auth via Firebase
-  const loginWithGoogle = async () => {
-    setLoading(true);
+  // 1. Google Auth via Firebase (resilient popup with automatic redirect fallback)
+  const loginWithGoogle = async (preferRedirect = false) => {
+    if (preferRedirect) {
+      setLoading(true);
+      await signInWithRedirect(auth, googleProvider);
+      return;
+    }
+
+    // IMPORTANT FOR SAFARI/IOS:
+    // Do NOT call setLoading(true) before signInWithPopup!
+    // Calling setState right before window.open breaks the synchronous user gesture chain,
+    // which triggers Safari's popup blocker (auth/popup-blocked).
     try {
       const res = await signInWithPopup(auth, googleProvider);
       if (res.user) {
         closeAuthModal();
       }
-    } finally {
-      setLoading(false);
+    } catch (err: any) {
+      console.warn('Google sign-in popup error:', err);
+      // If popup was blocked by browser (Safari, Chrome mobile, or In-App browser)
+      if (err?.code === 'auth/popup-blocked') {
+        console.info('Popup blocked by browser. Falling back to signInWithRedirect...');
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } catch (redirectErr) {
+          console.error('Redirect sign-in fallback failed:', redirectErr);
+          throw redirectErr;
+        }
+      }
+      throw err;
     }
+  };
+
+  const loginWithGoogleRedirect = async () => {
+    setLoading(true);
+    await signInWithRedirect(auth, googleProvider);
   };
 
   // 2. Email / Password Sign In via Firebase
@@ -347,6 +387,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         openAuthModal,
         closeAuthModal,
         loginWithGoogle,
+        loginWithGoogleRedirect,
         loginWithEmail,
         signUpWithEmail,
         loginAdmin,
