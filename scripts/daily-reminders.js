@@ -183,8 +183,58 @@ function createTransporter() {
     });
   }
 
-  console.log('⚠️ No email credentials found (GMAIL_USER & GMAIL_APP_PASSWORD). Running in DRY-RUN mode.');
+  if (process.env.RESEND_API_KEY) {
+    console.log('Using Resend API for email delivery.');
+    return { isResend: true, apiKey: process.env.RESEND_API_KEY.trim() };
+  }
+
+  console.log('⚠️ No email credentials found (GMAIL_USER & GMAIL_APP_PASSWORD, or RESEND_API_KEY). Running in DRY-RUN mode.');
   return null;
+}
+
+async function dispatchEmail(transporter, { to, subject, html }) {
+  if (!transporter) return false;
+
+  if (transporter.isResend) {
+    const postData = JSON.stringify({
+      from: process.env.RESEND_FROM || 'Relations With God <onboarding@resend.dev>',
+      to: [to],
+      subject,
+      html
+    });
+
+    return new Promise((resolve, reject) => {
+      const req = https.request('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${transporter.apiKey}`,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData)
+        }
+      }, (res) => {
+        let body = '';
+        res.on('data', c => body += c);
+        res.on('end', () => {
+          if (res.statusCode >= 200 && res.statusCode < 300) {
+            resolve(JSON.parse(body || '{}'));
+          } else {
+            reject(new Error(`Resend Error ${res.statusCode}: ${body}`));
+          }
+        });
+      });
+      req.on('error', reject);
+      req.write(postData);
+      req.end();
+    });
+  }
+
+  // Nodemailer (Gmail / SMTP)
+  return transporter.sendMail({
+    from: `"Relations With God" <${process.env.GMAIL_USER || 'no-reply@relationswithgod.in'}>`,
+    to,
+    subject,
+    html
+  });
 }
 
 function getTodayString() {
@@ -367,8 +417,7 @@ async function run() {
 
         if (transporter) {
           try {
-            await transporter.sendMail({
-              from: `"Relations With God" <${process.env.GMAIL_USER || 'no-reply@relationswithgod.in'}>`,
+            await dispatchEmail(transporter, {
               to: email,
               subject: tpl.subject,
               html: tpl.html
@@ -421,8 +470,7 @@ async function run() {
 
     if (transporter) {
       try {
-        await transporter.sendMail({
-          from: `"Relations With God" <${process.env.GMAIL_USER || 'no-reply@relationswithgod.in'}>`,
+        await dispatchEmail(transporter, {
           to: email,
           subject: reminderTpl.subject,
           html: reminderTpl.html
