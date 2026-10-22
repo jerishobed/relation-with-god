@@ -254,7 +254,7 @@ function calculateInactiveDays(dateStr) {
 
 // Templates
 function buildWelcomeEmail(name) {
-  const displayName = name || 'Child of God';
+  const displayName = name || 'Friend in Christ';
   return {
     subject: `உங்கள் 365 நாள் தேவனுடைய வார்த்தைப் பயணம் ஆரம்பமாகிறது! 📖✨ | Welcome to Relations With God`,
     html: `
@@ -268,7 +268,7 @@ function buildWelcomeEmail(name) {
 
         <div style="padding: 28px 24px;">
           <h2 style="margin-top: 0; color: #7A1C1C; font-size: 18px;">
-            அன்பான தேவபிள்ளையே ${displayName}, வாழ்த்துக்கள்! 🙏
+            கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), வாழ்த்துக்கள்! 🙏
           </h2>
           <p style="font-size: 14px; line-height: 1.6; color: #4A3E36;">
             கர்த்தராகிய இயேசு கிறிஸ்துவின் இனிய நாமத்தில் உங்களுக்கு அன்பின் வாழ்த்துக்கள். தேவனோடு அனுதினமும் நெருங்கி ஜீவிக்கும் இந்த 365 நாள் பயணத்தில் நீங்கள் இணைந்திருப்பதில் நாங்கள் மகிழ்ச்சியடைகிறோம்!
@@ -310,17 +310,26 @@ function buildWelcomeEmail(name) {
   };
 }
 
-function buildInactiveReminderEmail(name, inactiveDays, nextDayNum) {
-  const displayName = name || 'Child of God';
+const readingPlan = require('../src/data/readingPlan.json');
+
+function getDayPlanDetails(dayNum) {
+  const d = readingPlan.days.find(x => x.day === dayNum);
+  if (!d) return { tamilRef: `Day ${dayNum}`, englishRef: `Day ${dayNum}` };
+  const tamilRef = d.chapters.map(c => c.tamilRef).join(', ');
+  const englishRef = d.chapters.map(c => c.englishRef).join(', ');
+  return { tamilRef, englishRef };
+}
+
+function buildInactiveReminderEmail(name, inactiveDays, nextDayNum, progressStats = {}) {
+  const displayName = name || 'Friend in Christ';
   const isSecondDay = inactiveDays === 2;
+  const dayDetails = getDayPlanDetails(nextDayNum);
+  const completedCount = progressStats.completedDaysCount || 0;
+  const chaptersCount = progressStats.completedChaptersCount || 0;
+  const streak = progressStats.currentStreak || 0;
+  const percent = Math.round((completedCount / 365) * 100);
 
-  const subject = isSecondDay
-    ? `இன்றைக்கு தேவனோடு 5 நிமிடங்கள் செலவிடுங்கள் 🕊️ | Take 5 Minutes with God Today`
-    : `அனுதின தேவனுடைய வார்த்தை உங்களுக்காக காத்திருக்கிறது 📖 | Day ${nextDayNum} is ready!`;
-
-  const headerText = isSecondDay
-    ? `தேவன் உங்களுக்காக அன்போடு காத்திருக்கிறார்`
-    : `இன்றைய நாளுக்கான தேவனுடைய வார்த்தை`;
+  const subject = `கிறிஸ்துவுக்குள் அன்பான நண்பரே, உங்கள் Day ${nextDayNum} வாசிப்பு காத்திருக்கிறது 📖 | Relations With God`;
 
   return {
     subject,
@@ -328,38 +337,95 @@ function buildInactiveReminderEmail(name, inactiveDays, nextDayNum) {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #FAF8F5; padding: 24px; color: #2D241E;">
       <div style="max-width: 580px; margin: 0 auto; background: #FFFFFF; border-radius: 20px; overflow: hidden; border: 1px solid #EADBCC; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
         
-        <div style="background: linear-gradient(135deg, #7A1C1C, #C59A45); padding: 28px 24px; text-align: center; color: #FFFFFF;">
-          <h1 style="margin: 0; font-size: 20px; font-weight: 800;">${headerText}</h1>
-          <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Relations With God • 365 Days Walk</p>
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #7A1C1C, #9B2C2C, #C59A45); padding: 28px 24px; text-align: center; color: #FFFFFF;">
+          <h1 style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.5px;">Relations With God</h1>
+          <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.95;">365-Day Chronological Bible Journey</p>
         </div>
 
-        <div style="padding: 28px 24px;">
-          <p style="font-size: 15px; font-weight: bold; color: #7A1C1C; margin-top: 0;">
-            அன்பான தேவபிள்ளையே ${displayName},
-          </p>
-          <p style="font-size: 14px; line-height: 1.6; color: #4A3E36;">
-            ${isSecondDay
-              ? 'உங்கள் அன்றாட வேலைகளுக்கு மத்தியில், இன்றைக்கு தேவனோடு ஒரு 5 நிமிடங்கள் அமைதியாக செலவிட ஒரு அன்பான நினைவூட்டல். அவரே உங்கள் பலனும் உங்கள் வழிகாட்டியும்!'
-              : `உங்கள் 365 நாள் வேத வாசிப்பில் அடுத்த பகுதியான <strong>Day ${nextDayNum}</strong> உங்களுக்காக தயாராக உள்ளது.`}
+        <!-- Body -->
+        <div style="padding: 26px 22px;">
+          <h2 style="font-size: 17px; font-weight: bold; color: #7A1C1C; margin-top: 0;">
+            கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), 🙏
+          </h2>
+          <p style="font-size: 14px; line-height: 1.6; color: #4A3E36; margin-bottom: 16px;">
+            இன்றைய நாளுக்கான உங்கள் வேத வாசிப்பைத் தொடர ஒரு அன்பான நினைவூட்டல்! உங்கள் ஆவிக்குரிய பயணத்தில் நீங்கள் எந்த நாளில் இருந்தாலும், அடுத்த பகுதியின் வார்த்தை உங்களுக்காக காத்திருக்கிறது.
           </p>
 
-          <div style="background: #FDF9F3; border: 1px dashed #C59A45; border-radius: 12px; padding: 16px; text-align: center; margin: 20px 0;">
-            <p style="margin: 0; font-size: 12px; color: #8A7B70; text-transform: uppercase; font-weight: bold;">உங்கள் அடுத்த வாசிப்பு (Your Next Step)</p>
-            <p style="margin: 6px 0; font-size: 18px; font-weight: bold; color: #7A1C1C;">Day ${nextDayNum}</p>
-            <a href="https://relationswithgod.in/read/${nextDayNum}" style="display: inline-block; margin-top: 8px; background: linear-gradient(135deg, #C59A45, #9B2C2C); color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 13px; padding: 10px 22px; border-radius: 10px;">
-              வாசிக்கத் தொடங்குங்கள் (Continue Reading)
-            </a>
+          <!-- Personalized Progress & Next Day Card -->
+          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 14px; padding: 18px 20px; margin: 18px 0;">
+            
+            <!-- Progress stats row -->
+            <div style="border-bottom: 1px solid #EADBCC; padding-bottom: 12px; margin-bottom: 14px;">
+              <span style="font-size: 11px; text-transform: uppercase; color: #8A7B70; font-weight: bold; letter-spacing: 0.5px;">உங்கள் தற்போதைய முன்னேற்றம் (Your Progress)</span>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px;">
+                <p style="margin: 0; font-size: 15px; font-weight: bold; color: #7A1C1C;">
+                  ${completedCount} / 365 நாட்கள் முடிந்தது (${percent}%)
+                </p>
+                ${streak > 0 ? `<span style="background: #FFF3CD; border: 1px solid #FFE69C; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; color: #856404;">🔥 ${streak} நாள் Streak</span>` : ''}
+              </div>
+              <p style="margin: 3px 0 0 0; font-size: 12px; color: #7A6F66;">
+                மொத்தம் வாசித்த அதிகாரங்கள்: <strong>${chaptersCount} Chapters</strong>
+              </p>
+            </div>
+
+            <!-- Target: What to complete next -->
+            <div style="background: #FFFFFF; border: 1.5px solid #C59A45; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(197, 154, 69, 0.1);">
+              <span style="font-size: 11px; font-weight: bold; color: #C59A45; text-transform: uppercase; letter-spacing: 0.5px;">
+                👉 நீங்கள் அடுத்து வாசிக்க வேண்டியது (Next To Complete)
+              </span>
+              <h2 style="margin: 6px 0 2px 0; font-size: 24px; color: #7A1C1C; font-weight: 800;">
+                Day ${nextDayNum}
+              </h2>
+              <p style="margin: 2px 0 0 0; font-size: 15px; font-weight: bold; color: #2D241E;">
+                ${dayDetails.tamilRef}
+              </p>
+              <p style="margin: 1px 0 0 0; font-size: 12px; color: #6E5D53; font-style: italic;">
+                (${dayDetails.englishRef})
+              </p>
+
+              <div style="margin-top: 14px;">
+                <a href="https://relationswithgod.in/read/${nextDayNum}" style="display: inline-block; background: linear-gradient(135deg, #C59A45, #9B2C2C); color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 14px; padding: 12px 28px; border-radius: 10px; box-shadow: 0 4px 12px rgba(197, 154, 69, 0.35);">
+                  📖 Day ${nextDayNum} வாசிக்கத் தொடங்குங்கள் (Read Now)
+                </a>
+              </div>
+            </div>
+
           </div>
 
-          <p style="font-size: 12px; line-height: 1.5; color: #7A6F66; font-style: italic; text-align: center;">
+          <!-- Scripture Box -->
+          <div style="background: #FDF9F3; border-left: 4px solid #C59A45; padding: 12px 14px; border-radius: 8px; margin: 18px 0;">
+            <p style="margin: 0; font-style: italic; font-size: 12.5px; color: #664D03;">
+              “உம்முடைய வசனம் என் கால்களுக்குத் தீபமும், என் பாதைக்கு வெளிச்சமுமாயிருக்கிறது.” — சங்கீதம் 119:105
+            </p>
+          </div>
+
+          <p style="font-size: 12px; line-height: 1.5; color: #7A6F66; text-align: center; font-style: italic;">
             💡 குறிப்பு: எந்தவித அவசரமும் இல்லை! நீங்கள் உங்கள் சொந்த நேரத்தில், அமைதியாக வாசிக்கலாம்.
           </p>
 
-          <hr style="border: none; border-top: 1px solid #EADBCC; margin: 24px 0;" />
+          <hr style="border: none; border-top: 1px solid #EADBCC; margin: 20px 0;" />
 
-          <p style="font-size: 11px; color: #A09388; text-align: center; margin: 0;">
-            நீங்கள் தொந்தரவு அடையக்கூடாது என்பதற்காக, இதுவே உங்கள் வாசிப்புக்கான இறுதி நினைவூட்டல் ஆகும். நீங்கள் எப்போது வேண்டுமானாலும் உங்கள் Dashboard-ல் தொடரலாம்.<br />
-            Relations With God • <a href="https://relationswithgod.in/dashboard" style="color: #9B2C2C;">Dashboard</a>
+          <!-- English section -->
+          <div style="font-size: 12.5px; color: #5C4E43; line-height: 1.6;">
+            <p style="margin: 0 0 4px 0; font-weight: bold; color: #7A1C1C;">Dear Friend in Christ,</p>
+            <p style="margin: 0;">
+              Before this day ends, spend 5 peaceful minutes in God's Holy Word. Your assigned reading for <strong>Day ${nextDayNum} (${dayDetails.englishRef})</strong> is waiting for you in your dashboard. Walk at your own pace and be blessed!
+            </p>
+          </div>
+
+          <!-- WhatsApp Community card -->
+          <div style="background: #F4F7F4; border: 1px solid #D6E4D6; border-radius: 12px; padding: 12px 16px; margin-top: 18px; text-align: center;">
+            <p style="margin: 0 0 8px 0; font-size: 12px; color: #1E4620; font-weight: bold;">
+              💬 நமது WhatsApp சமூகத்தில் இணையுங்கள்:
+            </p>
+            <a href="https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 7px 16px; border-radius: 8px;">
+              Join WhatsApp Community
+            </a>
+          </div>
+
+          <p style="margin-top: 22px; font-size: 11px; color: #8A7B70; text-align: center;">
+            Relations With God Ministries • <a href="https://relationswithgod.in/dashboard" style="color: #9B2C2C; text-decoration: none;">Dashboard</a>
           </p>
         </div>
       </div>
@@ -466,7 +532,11 @@ async function run() {
 
     // Eligible for Reminder (Inactive Day 1 or Inactive Day 2)
     console.log(`[Reminder Target - Inactive ${inactiveDays}d] ${u.name || 'User'} (${email}) -> Next Day: ${nextDayNum}`);
-    const reminderTpl = buildInactiveReminderEmail(u.name, inactiveDays, nextDayNum);
+    const reminderTpl = buildInactiveReminderEmail(u.name, inactiveDays, nextDayNum, {
+      completedDaysCount: completedDays.length,
+      completedChaptersCount: Array.isArray(prog?.completedChapters) ? prog.completedChapters.length : (u.completedChaptersCount || 0),
+      currentStreak: prog?.currentStreak || u.currentStreak || 0
+    });
 
     if (transporter) {
       try {
