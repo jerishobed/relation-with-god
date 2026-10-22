@@ -51,6 +51,7 @@ export interface UserProfile {
   role: 'user' | 'admin';
   joinedDate: string;
   avatar?: string;
+  emailRemindersEnabled?: boolean;
 }
 
 export interface BroadcastAnnouncement {

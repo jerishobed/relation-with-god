@@ -33,6 +33,8 @@ import {
   getUserProgressFromFirestore,
   saveUserProgressToFirestore,
   saveDayNoteToFirestore,
+  updateEmailRemindersPreference,
+  getUserProfileFromFirestore,
 } from './firestoreService';
 
 interface AuthContextType {
@@ -56,6 +58,7 @@ interface AuthContextType {
   toggleDay: (dayNum: number) => void;
   saveNote: (dayNum: number, note: string) => void;
   resetProgress: () => void;
+  toggleEmailReminders: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -93,13 +96,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           fbUser.email === 'jerishbtech@gmail.com' ||
           fbUser.email === 'relationswithgod@gmail.com';
 
+        let remoteProfile: Partial<UserProfile> | null = null;
+        try {
+          remoteProfile = await getUserProfileFromFirestore(fbUser.uid);
+        } catch {}
+
         const profile: UserProfile = {
           id: fbUser.uid,
           name: fbUser.displayName || fbUser.email?.split('@')[0] || 'Child of God',
           email: fbUser.email || '',
           role: isOwner ? 'admin' : 'user',
-          joinedDate: new Date().toISOString().split('T')[0],
+          joinedDate: remoteProfile?.joinedDate || new Date().toISOString().split('T')[0],
           avatar: fbUser.photoURL || undefined,
+          emailRemindersEnabled: remoteProfile?.emailRemindersEnabled !== false,
         };
 
         setUser(profile);
@@ -369,6 +378,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     saveUserProgressToFirestore(user.id, fresh);
   };
 
+  const toggleEmailReminders = async () => {
+    if (!user) return;
+    const current = user.emailRemindersEnabled !== false;
+    const next = !current;
+    const updated: UserProfile = { ...user, emailRemindersEnabled: next };
+    setUser(updated);
+    setStoredUser(updated);
+    await updateEmailRemindersPreference(user.id, next);
+  };
+
   const isJerishAdmin =
     user?.role === 'admin' &&
     (user.id === 'usr_jerishbtech' ||
@@ -398,6 +417,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         toggleDay,
         saveNote,
         resetProgress,
+        toggleEmailReminders,
       }}
     >
       {children}

@@ -512,12 +512,28 @@ async function run() {
       }
     }
 
-    // Rule 3: Inactivity Reminders (MAX 2 INACTIVE DAYS ONLY, NO SPAM)
+    // Rule 0: Respect user opt-out preference
+    if (u.emailRemindersEnabled === false) {
+      console.log(`[Opt-Out] ${u.name || 'User'} (${email}) has disabled email reminders. Skipping.`);
+      skippedCount++;
+      continue;
+    }
+
+    // Check if user completed their reading today
+    const isCompletedToday = (prog?.lastActiveDate === todayStr) && completedDays.length > 0;
+
+    // Rule 3: Inactivity & Pending Reading Reminders (MAX 2 INACTIVE DAYS ONLY, NO SPAM)
     const lastActive = u.lastActiveDate || u.joinedDate || '';
     const inactiveDays = calculateInactiveDays(lastActive);
 
-    // Active today -> skip
-    if (inactiveDays === 0) {
+    // If already sent a reminder today, skip
+    if (u.lastReminderSentDate === todayStr) {
+      skippedCount++;
+      continue;
+    }
+
+    // Active today AND completed today's reading -> skip!
+    if (inactiveDays === 0 && isCompletedToday) {
       if (u.consecutiveReminderCount && u.consecutiveReminderCount > 0) {
         await updateUserFields(u.id, { consecutiveReminderCount: 0 }, token);
       }
@@ -530,14 +546,9 @@ async function run() {
       continue;
     }
 
-    // Already sent a reminder today?
-    if (u.lastReminderSentDate === todayStr) {
-      skippedCount++;
-      continue;
-    }
-
-    // Eligible for Reminder (Inactive Day 1 or Inactive Day 2)
-    console.log(`[Reminder Target - Inactive ${inactiveDays}d] ${u.name || 'User'} (${email}) -> Next Day: ${nextDayNum}`);
+    // Eligible for Reminder (Inactive Day 1 or Inactive Day 2, or visited today without completing)
+    const reminderReason = inactiveDays === 0 ? 'Pending Today' : `Inactive ${inactiveDays}d`;
+    console.log(`[Reminder Target - ${reminderReason}] ${u.name || 'User'} (${email}) -> Next Day: ${nextDayNum}`);
     const reminderTpl = buildInactiveReminderEmail(u.name, inactiveDays, nextDayNum, {
       completedDaysCount: completedDays.length,
       completedChaptersCount: Array.isArray(prog?.completedChapters) ? prog.completedChapters.length : (u.completedChaptersCount || 0),

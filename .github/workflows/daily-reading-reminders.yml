@@ -1,11 +1,10 @@
 name: Daily Reading Reminders & Welcome Emails
 
-# AUTOMATION PAUSED: Scheduled runs are disabled pending review.
 on:
-  # schedule:
-  #   - cron: '30 2 * * *'   # 8:00 AM IST
-  #   - cron: '30 13 * * *'  # 7:00 PM IST
-  workflow_dispatch: # Allows manual trigger only when needed
+  schedule:
+    # 3:30 PM UTC = 9:00 PM IST (Daily evening reminder)
+    - cron: '30 15 * * *'
+  workflow_dispatch: # Allows manual trigger anytime from GitHub Actions
 
 jobs:
   send-reminders:

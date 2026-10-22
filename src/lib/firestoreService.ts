@@ -22,20 +22,52 @@ import { createFreshProgress } from './storage';
 export async function syncUserProfileToFirestore(user: UserProfile) {
   try {
     const userRef = doc(db, 'users', user.id);
-    await setDoc(
-      userRef,
-      {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        joinedDate: user.joinedDate,
-        updatedAt: serverTimestamp(),
-      },
-      { merge: true }
-    );
+    const payload: Record<string, any> = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      joinedDate: user.joinedDate,
+      updatedAt: serverTimestamp(),
+    };
+    if (user.emailRemindersEnabled !== undefined) {
+      payload.emailRemindersEnabled = user.emailRemindersEnabled;
+    }
+    await setDoc(userRef, payload, { merge: true });
   } catch (err) {
     console.warn('Firestore syncUserProfile warning:', err);
+  }
+}
+
+/**
+ * Update user's email reminders preference in /users/{userId}
+ */
+export async function updateEmailRemindersPreference(userId: string, enabled: boolean) {
+  try {
+    const userRef = doc(db, 'users', userId);
+    await updateDoc(userRef, {
+      emailRemindersEnabled: enabled,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (err) {
+    console.warn('Failed to update email reminders preference:', err);
+  }
+}
+
+/**
+ * Fetch user profile from Firestore /users/{userId}
+ */
+export async function getUserProfileFromFirestore(userId: string): Promise<Partial<UserProfile> | null> {
+  try {
+    const userRef = doc(db, 'users', userId);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) {
+      return snap.data() as Partial<UserProfile>;
+    }
+    return null;
+  } catch (err) {
+    console.warn('Failed to get user profile from Firestore:', err);
+    return null;
   }
 }
 
