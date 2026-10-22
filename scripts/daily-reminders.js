@@ -192,16 +192,18 @@ function createTransporter() {
   return null;
 }
 
-async function dispatchEmail(transporter, { to, subject, html }) {
+async function dispatchEmail(transporter, { to, subject, html, text }) {
   if (!transporter) return false;
 
   if (transporter.isResend) {
-    const postData = JSON.stringify({
-      from: process.env.RESEND_FROM || 'Relations With God <onboarding@resend.dev>',
+    const payload = {
+      from: process.env.RESEND_FROM || 'Relations With God <connect@relationswithgod.in>',
       to: [to],
       subject,
       html
-    });
+    };
+    if (text) payload.text = text;
+    const postData = JSON.stringify(payload);
 
     return new Promise((resolve, reject) => {
       const req = https.request('https://api.resend.com/emails', {
@@ -230,10 +232,11 @@ async function dispatchEmail(transporter, { to, subject, html }) {
 
   // Nodemailer (Gmail / SMTP)
   return transporter.sendMail({
-    from: `"Relations With God" <${process.env.GMAIL_USER || 'no-reply@relationswithgod.in'}>`,
+    from: `"Relations With God" <${process.env.GMAIL_USER || 'connect@relationswithgod.in'}>`,
     to,
     subject,
-    html
+    html,
+    text
   });
 }
 
@@ -306,7 +309,8 @@ function buildWelcomeEmail(name) {
         </div>
       </div>
     </div>
-    `
+    `,
+    text: `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}),\n\nRelations With God 365-நாள் வேத வாசிப்புப் பயணத்திற்கு அன்புடன் வரவேற்கிறோம்!\n\nஇன்றே முதல் நாள் வாசிப்பைத் தொடங்குங்கள்:\nDay 1: ஆதியாகமம் 1, 2, 3\n\nவாசிக்க: https://relationswithgod.in/read/1\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`
   };
 }
 
@@ -430,7 +434,8 @@ function buildInactiveReminderEmail(name, inactiveDays, nextDayNum, progressStat
         </div>
       </div>
     </div>
-    `
+    `,
+    text: `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}),\n\nஉங்கள் Day ${nextDayNum} வாசிப்பு காத்திருக்கிறது 📖\n\nபகுதி: ${dayDetails.tamilRef} (${dayDetails.englishRef})\n\nஉங்கள் முன்னேற்றம்:\n- ${completedCount} / 365 நாட்கள் முடிந்தது (${percent}%)\n- மொத்தம் வாசித்த அதிகாரங்கள்: ${chaptersCount} Chapters\n\nஉடனே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\n\nDear Friend in Christ, before this day ends, spend 5 peaceful minutes in God's Holy Word. Walk at your own pace and be blessed!\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in/dashboard`
   };
 }
 
@@ -486,7 +491,8 @@ async function run() {
             await dispatchEmail(transporter, {
               to: email,
               subject: tpl.subject,
-              html: tpl.html
+              html: tpl.html,
+              text: tpl.text
             });
             console.log(`  ✓ Sent welcome email to ${email}`);
             await updateUserFields(u.id, {
@@ -543,7 +549,8 @@ async function run() {
         await dispatchEmail(transporter, {
           to: email,
           subject: reminderTpl.subject,
-          html: reminderTpl.html
+          html: reminderTpl.html,
+          text: reminderTpl.text
         });
         console.log(`  ✓ Sent inactive day ${inactiveDays} reminder to ${email}`);
         await updateUserFields(u.id, {
