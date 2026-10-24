@@ -2,8 +2,8 @@ name: Daily Founder Reading & Activity Report
 
 on:
   schedule:
-    # 5:00 PM UTC = 10:30 PM IST (Daily night summary)
-    - cron: '0 17 * * *'
+    # 5:03 PM UTC = 10:33 PM IST (Off-peak minute to avoid GitHub Actions queue delays)
+    - cron: '3 17 * * *'
   workflow_dispatch: # Allows manual run anytime from GitHub Actions tab
 
 jobs:
