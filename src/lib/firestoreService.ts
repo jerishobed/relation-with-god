@@ -609,6 +609,7 @@ export async function submitFeedback(
       userId: feedbackData.userId || auth.currentUser?.uid || null,
       createdAt: nowIso,
       createdAtTimestamp: serverTimestamp(),
+      adminNotified: false,
     };
 
     // Strip undefined properties

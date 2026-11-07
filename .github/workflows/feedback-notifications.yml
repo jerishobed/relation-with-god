@@ -1,0 +1,38 @@
+name: Feedback & Prayer Request Notifications
+
+on:
+  schedule:
+    # Run every 15 minutes to deliver feedback, testimonies & prayer requests promptly
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  notify-feedback:
+    name: Check & Alert Founder on New Submissions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Notifier Script
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM || 'Relations With God Alerts <connect@relationswithgod.in>' }}
+          ADMIN_REPORT_EMAIL: 'jerishbtech@gmail.com'
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        run: node scripts/notify-admin-feedback.js

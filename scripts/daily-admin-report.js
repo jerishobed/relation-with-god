@@ -25,6 +25,21 @@ function getDayPlanDetails(dayNum) {
   return { tamilRef, englishRef };
 }
 
+function getCategoryBadge(category) {
+  switch (category) {
+    case 'testimonial':
+      return { labelTa: 'சாட்சி & ஆவிக்குரிய ஆசீர்வாதம்', labelEn: 'Testimonial & Blessing', color: '#B91C1C', bg: '#FEE2E2', icon: '💖' };
+    case 'prayer_request':
+      return { labelTa: 'ஜெப விண்ணப்பம்', labelEn: 'Prayer Request', color: '#6B21A8', bg: '#F3E8FF', icon: '🙏' };
+    case 'suggestion':
+      return { labelTa: 'இணையதள யோசனை / ஆலோசனை', labelEn: 'Website Suggestion', color: '#B45309', bg: '#FEF3C7', icon: '💡' };
+    case 'question':
+      return { labelTa: 'கேள்வி / உதவி', labelEn: 'Question & Help', color: '#1D4ED8', bg: '#DBEAFE', icon: '❓' };
+    default:
+      return { labelTa: 'கருத்து', labelEn: 'General Feedback', color: '#15803D', bg: '#DCFCE7', icon: '✍️' };
+  }
+}
+
 async function getAccessToken() {
   if (process.env.GCP_ACCESS_TOKEN) {
     return process.env.GCP_ACCESS_TOKEN.trim();
@@ -279,6 +294,18 @@ async function generateAndSendReport() {
   console.log(`- Active Today: ${activeMembersToday.length}`);
   console.log(`- Reading Completed Today: ${completedTodayList.length}`);
 
+  // 2. Fetch feedback & prayer submissions
+  const rawFeedback = await firestoreRequest('feedback?pageSize=100', 'GET', null, token);
+  const feedbackItems = (rawFeedback?.documents || []).map(parseFirestoreDoc).filter(Boolean);
+  const feedbackToday = feedbackItems.filter(f => (f.createdAt || '').startsWith(todayStr));
+  console.log(`- Feedback / Prayer Requests Today: ${feedbackToday.length}`);
+
+  // 3. Fetch booklet requests
+  const rawBooklets = await firestoreRequest('booklet_requests?pageSize=100', 'GET', null, token);
+  const bookletItems = (rawBooklets?.documents || []).map(parseFirestoreDoc).filter(Boolean);
+  const bookletToday = bookletItems.filter(b => (b.createdAt || '').startsWith(todayStr));
+  console.log(`- Booklet Requests Today: ${bookletToday.length}`);
+
   // Format HTML & Plain Text
   const subject = `📊 Daily Bible Reading Report - ${todayStr}: ${completedTodayList.length} Completed | Relations With God`;
 
@@ -328,32 +355,64 @@ async function generateAndSendReport() {
 
       <!-- Overview Cards -->
       <div style="padding: 22px 24px;">
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 24px;">
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px;">
           
-          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 12px; text-align: center;">
-            <div style="font-size: 11px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Completed Today</div>
-            <div style="font-size: 24px; font-weight: 800; color: #1B5E20; margin-top: 4px;">${completedTodayList.length}</div>
+          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 10px 6px; text-align: center;">
+            <div style="font-size: 10px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Completed</div>
+            <div style="font-size: 20px; font-weight: 800; color: #1B5E20; margin-top: 4px;">${completedTodayList.length}</div>
           </div>
 
-          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 12px; text-align: center;">
-            <div style="font-size: 11px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Active Today</div>
-            <div style="font-size: 24px; font-weight: 800; color: #7A1C1C; margin-top: 4px;">${activeMembersToday.length}</div>
+          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 10px 6px; text-align: center;">
+            <div style="font-size: 10px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Active</div>
+            <div style="font-size: 20px; font-weight: 800; color: #7A1C1C; margin-top: 4px;">${activeMembersToday.length}</div>
           </div>
 
-          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 12px; text-align: center;">
-            <div style="font-size: 11px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">New Registered</div>
-            <div style="font-size: 24px; font-weight: 800; color: #C59A45; margin-top: 4px;">${newMembersToday.length}</div>
+          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 10px 6px; text-align: center;">
+            <div style="font-size: 10px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Feedback / Prayer</div>
+            <div style="font-size: 20px; font-weight: 800; color: #6B21A8; margin-top: 4px;">${feedbackToday.length}</div>
           </div>
 
-          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 12px; text-align: center;">
-            <div style="font-size: 11px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Total Members</div>
-            <div style="font-size: 24px; font-weight: 800; color: #2D241E; margin-top: 4px;">${totalMembers}</div>
+          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 10px 6px; text-align: center;">
+            <div style="font-size: 10px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">New Registered</div>
+            <div style="font-size: 20px; font-weight: 800; color: #C59A45; margin-top: 4px;">${newMembersToday.length}</div>
+          </div>
+
+          <div style="background: #FDFBF7; border: 1px solid #E8DEC8; border-radius: 12px; padding: 10px 6px; text-align: center;">
+            <div style="font-size: 10px; text-transform: uppercase; color: #8A7B70; font-weight: bold;">Total Members</div>
+            <div style="font-size: 20px; font-weight: 800; color: #2D241E; margin-top: 4px;">${totalMembers}</div>
           </div>
 
         </div>
 
+        <!-- Section: Feedback, Testimonies & Prayer Requests Today -->
+        ${feedbackToday.length > 0 ? `
+          <h2 style="font-size: 15px; color: #7A1C1C; border-bottom: 2px solid #EADBCC; padding-bottom: 6px; margin: 20px 0 12px 0;">
+            💌 Believer Feedback, Testimonies & Prayer Requests Today (${feedbackToday.length})
+          </h2>
+          <div style="margin-bottom: 20px;">
+            ${feedbackToday.map(fb => {
+              const b = getCategoryBadge(fb.category);
+              return `
+                <div style="background: #FDF9F3; border: 1px solid #EADBCC; border-left: 4px solid ${b.color}; border-radius: 10px; padding: 12px 14px; margin-bottom: 10px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <div>
+                      <span style="background: ${b.bg}; color: ${b.color}; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold;">${b.icon} ${b.labelTa} (${b.labelEn})</span>
+                      <strong style="margin-left: 8px; font-size: 13px; color: #2D241E;">${fb.fullName || 'Anonymous Believer'}</strong>
+                      ${fb.email ? `<span style="font-size: 12px; color: #7A6F66;">(${fb.email})</span>` : ''}
+                    </div>
+                    <div style="font-size: 12px;">${'⭐'.repeat(fb.rating || 5)}</div>
+                  </div>
+                  <div style="font-size: 13px; color: #3E3229; line-height: 1.6; white-space: pre-wrap; margin-top: 6px; background: #FFFFFF; padding: 8px 10px; border-radius: 6px; border: 1px solid #EADBCC;">
+                    ${fb.message || '(No text content)'}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : ''}
+
         <!-- Section: Completed Today Breakdown -->
-        <h2 style="font-size: 16px; color: #1B3B2B; border-bottom: 2px solid #EADBCC; padding-bottom: 8px; margin: 24px 0 14px 0;">
+        <h2 style="font-size: 15px; color: #1B3B2B; border-bottom: 2px solid #EADBCC; padding-bottom: 6px; margin: 20px 0 12px 0;">
           📖 Believers Who Completed Reading Today (${completedTodayList.length})
         </h2>
 
@@ -403,8 +462,12 @@ async function generateAndSendReport() {
     `Summary:\n` +
     `- Completed Today: ${completedTodayList.length}\n` +
     `- Active Today: ${activeMembersToday.length}\n` +
+    `- Feedback & Prayer Requests Today: ${feedbackToday.length}\n` +
+    `- Booklet Requests Today: ${bookletToday.length}\n` +
     `- New Joined Today: ${newMembersToday.length}\n` +
     `- Total Community Members: ${totalMembers}\n\n` +
+    (feedbackToday.length > 0 ? `Feedback & Prayer Requests Today (${feedbackToday.length}):\n` +
+      feedbackToday.map(f => `* [${f.category}] ${f.fullName || 'Anonymous'} (${f.email || 'No email'}) - Rating: ${f.rating || 5}/5: "${f.message || ''}"`).join('\n') + '\n\n' : '') +
     `Completed Today Details:\n` +
     completedTodayList.map(c => `* ${c.name} (${c.email}): Day ${c.latestDay} [${c.tamilRef} / ${c.englishRef}] | Overall: ${c.totalCompletedDays}/365 | Streak: ${c.streak}d${c.latestNote ? ` | Note: "${c.latestNote}"` : ''}`).join('\n') +
     `\n\nNew Members Today:\n` +

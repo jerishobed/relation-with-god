@@ -117,4 +117,6 @@ export interface FeedbackSubmission {
   userId?: string | null;
   createdAt: string; // ISO date string
   createdAtTimestamp?: any;
+  adminNotified?: boolean;
+  adminNotifiedAt?: string;
 }
