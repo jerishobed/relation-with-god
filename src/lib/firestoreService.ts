@@ -13,7 +13,7 @@ import {
   orderBy,
   limit,
 } from 'firebase/firestore';
-import { UserProfile, UserProgress, AdminAudienceStats, BroadcastAnnouncement, BookletRequest } from '@/types';
+import { UserProfile, UserProgress, AdminAudienceStats, BroadcastAnnouncement, BookletRequest, FeedbackSubmission } from '@/types';
 import { createFreshProgress } from './storage';
 
 /**
@@ -587,5 +587,71 @@ export async function deleteBookletRequestFromFirestore(requestId: string): Prom
   } catch (err: any) {
     console.error('Error deleting booklet request:', err);
     return { success: false, error: err?.message || 'Delete failed' };
+  }
+}
+
+/**
+ * Submit feedback or prayer request to /feedback
+ */
+export async function submitFeedback(
+  feedbackData: Omit<FeedbackSubmission, 'id' | 'createdAt' | 'createdAtTimestamp'>
+): Promise<{ success: boolean; id?: string; error?: string }> {
+  try {
+    const feedbackCol = collection(db, 'feedback');
+    const nowIso = new Date().toISOString();
+
+    const cleanPayload: Record<string, any> = {
+      fullName: feedbackData.fullName ? String(feedbackData.fullName).trim() : 'Anonymous Believer',
+      email: feedbackData.email ? String(feedbackData.email).trim() : '',
+      category: feedbackData.category || 'testimonial',
+      rating: typeof feedbackData.rating === 'number' ? feedbackData.rating : 5,
+      message: feedbackData.message ? String(feedbackData.message).trim() : '',
+      userId: feedbackData.userId || auth.currentUser?.uid || null,
+      createdAt: nowIso,
+      createdAtTimestamp: serverTimestamp(),
+    };
+
+    // Strip undefined properties
+    Object.keys(cleanPayload).forEach((key) => {
+      if (cleanPayload[key] === undefined) {
+        delete cleanPayload[key];
+      }
+    });
+
+    const docRef = await addDoc(feedbackCol, cleanPayload);
+    return { success: true, id: docRef.id };
+  } catch (err: any) {
+    console.error('Error submitting feedback:', err);
+    return { success: false, error: err?.message || 'Failed to submit feedback' };
+  }
+}
+
+/**
+ * Fetch all feedback submissions for Admin
+ */
+export async function getFeedbackSubmissionsFromFirestore(): Promise<FeedbackSubmission[]> {
+  try {
+    const feedbackCol = collection(db, 'feedback');
+    const snap = await getDocs(feedbackCol);
+    const list: FeedbackSubmission[] = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      list.push({
+        id: d.id,
+        fullName: data.fullName || 'Anonymous Believer',
+        email: data.email || '',
+        category: data.category || 'testimonial',
+        rating: data.rating || 5,
+        message: data.message || '',
+        userId: data.userId || null,
+        createdAt: data.createdAt || new Date().toISOString(),
+      });
+    });
+    // Sort descending by date
+    list.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return list;
+  } catch (err) {
+    console.warn('Failed to fetch feedback submissions:', err);
+    return [];
   }
 }

@@ -104,3 +104,17 @@ export interface BookletRequest {
   dispatchedAt?: string;
   deliveredAt?: string;
 }
+
+export type FeedbackCategory = 'testimonial' | 'suggestion' | 'prayer_request' | 'question' | 'other';
+
+export interface FeedbackSubmission {
+  id?: string;
+  fullName?: string;
+  email?: string;
+  category: FeedbackCategory;
+  rating?: number; // 1 to 5
+  message: string;
+  userId?: string | null;
+  createdAt: string; // ISO date string
+  createdAtTimestamp?: any;
+}

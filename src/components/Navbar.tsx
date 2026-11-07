@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Languages,
   Gift,
+  MessageSquareHeart,
 } from 'lucide-react';
 import { YoutubeIcon, InstagramIcon, WhatsAppIcon } from '@/components/SocialIcons';
 
@@ -96,6 +97,18 @@ export default function Navbar() {
               <span className="px-1.5 py-0.2 rounded-full bg-gold-500 text-white text-[9px] font-extrabold uppercase">
                 Free
               </span>
+            </Link>
+
+            <Link
+              href="/feedback"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                pathname.startsWith('/feedback')
+                  ? 'text-sacred-700 dark:text-gold-400 font-semibold bg-gold-100/50 dark:bg-sanctuary-800/60'
+                  : 'text-sanctuary-700 dark:text-sanctuary-300 hover:text-gold-600'
+              }`}
+            >
+              <MessageSquareHeart className="w-3.5 h-3.5 text-gold-600" />
+              <span>{isTamil ? 'கருத்துக்கள்' : 'Feedback'}</span>
             </Link>
 
             {isAdmin && (

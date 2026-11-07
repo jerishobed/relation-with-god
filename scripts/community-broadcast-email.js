@@ -227,7 +227,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
   const dayDetails = getDayPlanDetails(nextDayNum);
   const testPrefix = isTest ? '[PREVIEW / TEST] ' : '';
 
-  const subject = `${testPrefix}கிறிஸ்துவுக்குள் அன்பான நண்பரே, வார இறுதி வேத வாசிப்பு உற்சாகம் & உங்கள் Day ${nextDayNum} 📖✨ | Relations With God`;
+  const subject = `${testPrefix}கிறிஸ்துவுக்குள் அன்பான நண்பரே, உங்கள் Day ${nextDayNum} வாசிப்பு காத்திருக்கிறது 📖✨ | Relations With God`;
 
   const html = `
 <!DOCTYPE html>
@@ -244,7 +244,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
       <!-- Premium Hero Header -->
       <div style="background: linear-gradient(135deg, #7A1C1C 0%, #9B2C2C 50%, #C59A45 100%); padding: 36px 24px; text-align: center; color: #FFFFFF;">
         <div style="display: inline-block; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 20px; padding: 4px 14px; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
-          Weekend Community Fellowship
+          Community Devotional • விசுவாச குடும்ப ஐக்கியம்
         </div>
         <h1 style="margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 0.5px; line-height: 1.2;">
           Relations With God
@@ -262,7 +262,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
           கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்! 🙏
         </h2>
         <p style="font-size: 14px; line-height: 1.7; color: #4A3E36; margin-bottom: 20px;">
-          நமது இரட்சகராகிய இயேசு கிறிஸ்துவின் இனிய நாமத்தில் உங்களுக்கு மனமார்ந்த நல்வாழ்த்துக்கள்! இந்த வார இறுதியில், கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்த இந்த மடல் அன்போடு எழுதப்படுகிறது.
+          நமது இரட்சகராகிய இயேசு கிறிஸ்துவின் இனிய நாமத்தில் உங்களுக்கு மனமார்ந்த நல்வாழ்த்துக்கள்! அனுதினமும் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்தவும், உங்கள் வேத வாசிப்புப் பயணத்தை உற்சாகப்படுத்தவும் இந்த மடல் அன்போடு எழுதப்படுகிறது.
         </p>
 
         <!-- Scripture Banner -->
@@ -283,7 +283,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
             <strong style="color: #1B5E20; font-size: 14px;">நமது விசுவாச குடும்பத்தின் வெற்றிப் படிகள்:</strong>
           </div>
           <p style="font-size: 13px; line-height: 1.6; color: #2E5A31; margin: 0;">
-            நமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து முன்னேறி வருகிறார்கள்! <strong>100 அதிகாரங்களைத் தாண்டி</strong> யாத்திராகமத்திற்குள் (Exodus) பிரவேசித்தும், யோபுவின் முழு புத்தகத்தை (Book of Job) வாசித்து முடித்தும், ஆதியாகமத்தின் ஆசீர்வாதங்களை சுதந்தரித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.
+            நமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து முன்னேறி வருகிறார்கள்! <strong>100 அதிகாரங்களைத் தாண்டி</strong> யாத்திராகமத்திற்குள் (Exodus) பிரவேசித்தும், யோபுவின் முழு புத்தகத்தை (Book of Job) வாசித்து முடித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.
           </p>
         </div>
 
@@ -337,6 +337,19 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
           </div>
         </div>
 
+        <!-- Feedback Invitation Box -->
+        <div style="background: #FFFDF9; border: 1.5px dashed #C59A45; border-radius: 14px; padding: 18px 20px; margin: 24px 0; text-align: center;">
+          <div style="font-size: 14px; font-weight: bold; color: #7A1C1C; margin-bottom: 4px;">
+            ✍️ உங்கள் கருத்துக்களையும் ஆலோசனைகளையும் எங்களுடன் பகிருங்கள்
+          </div>
+          <p style="font-size: 12.5px; line-height: 1.6; color: #5C4E43; margin: 0 0 14px 0;">
+            இந்த வேதாகம வாசிப்பு தளம் உங்களுக்கு எவ்வகையில் ஆசீர்வாதமாக இருக்கிறது? மேலும் என்ன வசதிகள் தேவை? உங்கள் மேலான கருத்துக்கள் அல்லது ஜெப விண்ணப்பத்தை இணையதளத்தில் எளிதாகப் பதிவு செய்யலாம்.
+          </p>
+          <a href="https://relationswithgod.in/feedback" style="display: inline-block; background: #C59A45; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 13px; padding: 10px 24px; border-radius: 10px; box-shadow: 0 2px 8px rgba(197, 154, 69, 0.3);">
+            கருத்து தெரிவிக்க (Share Feedback)
+          </a>
+        </div>
+
         <!-- WhatsApp Community Box -->
         <div style="background: #F4F7F4; border: 1px solid #D6E4D6; border-radius: 12px; padding: 16px; margin: 26px 0; text-align: center;">
           <p style="margin: 0 0 10px 0; font-size: 13px; color: #1E4620; font-weight: bold;">
@@ -371,7 +384,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
 </html>
   `;
 
-  const text = `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்!\n\nஇந்த வார இறுதியில் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்த இந்த மடல் அன்போடு எழுதப்படுகிறது.\n\n“உம்முடைய வார்த்தைகள் கிடைத்தவுடனே அவைகளை உட்கொண்டேன்; உம்முடைய வார்த்தை எனக்கு மகிழ்ச்சியும், என் இருதயத்திற்கு ஆனந்தமுமாயிருந்தது...” — எரேமியா 15:16\n\nஉங்கள் அடுத்த வேத வாசிப்புப் பகுதி:\nDay ${nextDayNum}: ${dayDetails.tamilRef} (${dayDetails.englishRef})\nமுடித்த நாட்கள்: ${completedDaysCount} நாட்கள் | வாசித்த அதிகாரங்கள்: ${completedChaptersCount} chs\n\nஇன்றே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\nடேஷ்போர்டு: https://relationswithgod.in/dashboard\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`;
+  const text = `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்!\n\nஅனுதினமும் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்தவும், உங்கள் வேத வாசிப்புப் பயணத்தை உற்சாகப்படுத்தவும் இந்த மடல் அன்போடு எழுதப்படுகிறது.\n\n“உம்முடைய வார்த்தைகள் கிடைத்தவுடனே அவைகளை உட்கொண்டேன்; உம்முடைய வார்த்தை எனக்கு மகிழ்ச்சியும், என் இருதயத்திற்கு ஆனந்தமுமாயிருந்தது...” — எரேமியா 15:16\n\nநமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து முன்னேறி வருகிறார்கள்! 100 அதிகாரங்களைத் தாண்டி யாத்திராகமத்திற்குள் (Exodus) பிரவேசித்தும், யோபுவின் முழு புத்தகத்தை (Book of Job) வாசித்து முடித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.\n\nஉங்கள் அடுத்த வேத வாசிப்புப் பகுதி:\nDay ${nextDayNum}: ${dayDetails.tamilRef} (${dayDetails.englishRef})\nமுடித்த நாட்கள்: ${completedDaysCount} நாட்கள் | வாசித்த அதிகாரங்கள்: ${completedChaptersCount} chs\n\nஇன்றே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\nடேஷ்போர்டு: https://relationswithgod.in/dashboard\nகருத்து தெரிவிக்க: https://relationswithgod.in/feedback\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`;
 
   return { subject, html, text };
 }

@@ -105,6 +105,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/feedback" className="hover:text-gold-600 transition-colors flex items-center gap-1.5 text-sanctuary-700 dark:text-sanctuary-300">
+                  <span>✍️ கருத்துக்கள் (Feedback & Reflections)</span>
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://www.bible.com"
                   target="_blank"

@@ -19,6 +19,7 @@ import {
   User,
   Shield,
   ExternalLink,
+  MessageSquareHeart,
 } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/SocialIcons';
 
@@ -188,6 +189,31 @@ export default function DashboardPage() {
 
         {/* Today's Reading Target - IMMEDIATELY AT THE TOP! */}
         <ReadingPlanGrid />
+
+        {/* Feedback / Prayer Request Invitation Banner */}
+        <div className="mt-8 p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-sacred-700/10 to-gold-500/10 border border-gold-400/30 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-gold-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <MessageSquareHeart className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-sanctuary-900 dark:text-sanctuary-100">
+                {isTamil ? 'உங்கள் கருத்துக்கள் & ஆவிக்குரிய சாட்சிகள்' : 'Share Your Feedback & Testimony'}
+              </p>
+              <p className="text-xs text-sanctuary-600 dark:text-sanctuary-400">
+                {isTamil
+                  ? 'இந்த தளம் உங்கள் வேத வாசிப்பை எவ்வகையில் பலப்படுத்தியது? கருத்துக்கள் & ஜெப விண்ணப்பங்களை பகிருங்கள்.'
+                  : 'How has this reading journey encouraged you? Share your reflections or prayer requests with us.'}
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/feedback"
+            className="shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-primary-700 to-amber-600 hover:from-primary-800 hover:to-amber-700 text-white text-xs font-bold shadow-sm transition-all"
+          >
+            {isTamil ? 'கருத்து தெரிவிக்க' : 'Share Feedback'}
+          </Link>
+        </div>
 
       </div>
     </div>

@@ -46,5 +46,11 @@ service cloud.firestore {
       allow create: if true;
       allow read, update, delete: if isJerishAdmin();
     }
+
+    // Feedback and prayer requests submissions
+    match /feedback/{feedbackId} {
+      allow create: if true;
+      allow read, update, delete: if isJerishAdmin();
+    }
   }
 }
