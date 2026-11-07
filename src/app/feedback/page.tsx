@@ -128,7 +128,7 @@ export default function FeedbackPage() {
         
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-2 text-xs text-sanctuary-500 mb-6 font-medium">
-          <Link href="/" className="hover:text-primary-600 transition-colors">
+          <Link href="/" className="hover:text-gold-600 transition-colors">
             {isTamil ? 'முகப்பு' : 'Home'}
           </Link>
           <span>/</span>
@@ -139,7 +139,7 @@ export default function FeedbackPage() {
 
         {/* Header Hero */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-primary-700 to-amber-600 text-white shadow-lg shadow-primary-700/20 mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-sacred-700 to-gold-500 text-white shadow-lg shadow-sacred-700/20 mb-4">
             <MessageSquareHeart className="w-7 h-7" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-cinzel font-bold text-sanctuary-900 dark:text-sanctuary-100">
@@ -172,7 +172,7 @@ export default function FeedbackPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
                 href="/dashboard"
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-primary-700 to-amber-600 hover:from-primary-800 hover:to-amber-700 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sacred-700 to-gold-600 hover:from-sacred-800 hover:to-gold-700 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2"
               >
                 <Compass className="w-4 h-4" />
                 <span>{isTamil ? 'டேஷ்போர்டுக்கு செல்லவும்' : 'Go to Dashboard'}</span>
@@ -216,7 +216,7 @@ export default function FeedbackPage() {
                         onClick={() => setCategory(cat.id)}
                         className={`p-3.5 rounded-2xl border text-left flex items-center gap-3 transition-all ${
                           isSelected
-                            ? 'border-primary-600 bg-primary-50/70 dark:bg-primary-950/40 ring-2 ring-primary-500/30'
+                            ? 'border-sacred-600 bg-sacred-50/70 dark:bg-sacred-950/40 ring-2 ring-sacred-500/30'
                             : 'border-sanctuary-200 dark:border-sanctuary-800 hover:border-sanctuary-300 dark:hover:border-sanctuary-700 bg-sanctuary-50/50 dark:bg-sanctuary-950/30'
                         }`}
                       >
@@ -224,7 +224,7 @@ export default function FeedbackPage() {
                           <Icon className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-bold ${isSelected ? 'text-primary-800 dark:text-primary-300' : 'text-sanctuary-800 dark:text-sanctuary-200'}`}>
+                          <p className={`text-xs font-bold ${isSelected ? 'text-sacred-800 dark:text-sacred-300' : 'text-sanctuary-800 dark:text-sanctuary-200'}`}>
                             {isTamil ? cat.titleTa : cat.titleEn}
                           </p>
                           <p className="text-[11px] text-sanctuary-500 truncate">
@@ -250,7 +250,7 @@ export default function FeedbackPage() {
                       onClick={() => setRating(star)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
-                      className="p-1 transition-transform hover:scale-110 focus:outline-none"
+                      className="p-1 transition-transform hover:scale-110 focus:outline-none cursor-pointer"
                     >
                       <Star
                         className={`w-7 h-7 ${
@@ -285,7 +285,7 @@ export default function FeedbackPage() {
                       : 'Share your thoughts, experiences, encouragement, or any features you would love to see...'
                   }
                   required
-                  className="w-full rounded-2xl bg-sanctuary-50 dark:bg-sanctuary-950 border border-sanctuary-200 dark:border-sanctuary-800 p-4 text-sm text-sanctuary-900 dark:text-sanctuary-100 placeholder-sanctuary-400 focus:outline-none focus:ring-2 focus:ring-primary-600 transition-all resize-y"
+                  className="w-full rounded-2xl bg-sanctuary-50 dark:bg-sanctuary-950 border border-sanctuary-200 dark:border-sanctuary-800 p-4 text-sm text-sanctuary-900 dark:text-sanctuary-100 placeholder-sanctuary-400 focus:outline-none focus:ring-2 focus:ring-sacred-600 transition-all resize-y"
                 />
               </div>
 
@@ -300,7 +300,7 @@ export default function FeedbackPage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder={isTamil ? 'எ.கா: சுந்தர்' : 'e.g. John Doe'}
-                    className="w-full rounded-xl bg-sanctuary-50 dark:bg-sanctuary-950 border border-sanctuary-200 dark:border-sanctuary-800 px-4 py-3 text-sm text-sanctuary-900 dark:text-sanctuary-100 placeholder-sanctuary-400 focus:outline-none focus:ring-2 focus:ring-primary-600 transition-all"
+                    className="w-full rounded-xl bg-sanctuary-50 dark:bg-sanctuary-950 border border-sanctuary-200 dark:border-sanctuary-800 px-4 py-3 text-sm text-sanctuary-900 dark:text-sanctuary-100 placeholder-sanctuary-400 focus:outline-none focus:ring-2 focus:ring-sacred-600 transition-all"
                   />
                 </div>
                 <div>
@@ -312,7 +312,7 @@ export default function FeedbackPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full rounded-xl bg-sanctuary-50 dark:bg-sanctuary-950 border border-sanctuary-200 dark:border-sanctuary-800 px-4 py-3 text-sm text-sanctuary-900 dark:text-sanctuary-100 placeholder-sanctuary-400 focus:outline-none focus:ring-2 focus:ring-primary-600 transition-all"
+                    className="w-full rounded-xl bg-sanctuary-50 dark:bg-sanctuary-950 border border-sanctuary-200 dark:border-sanctuary-800 px-4 py-3 text-sm text-sanctuary-900 dark:text-sanctuary-100 placeholder-sanctuary-400 focus:outline-none focus:ring-2 focus:ring-sacred-600 transition-all"
                   />
                 </div>
               </div>
@@ -321,14 +321,14 @@ export default function FeedbackPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-primary-700 via-primary-600 to-amber-600 hover:from-primary-800 hover:to-amber-700 text-white font-bold text-sm shadow-lg shadow-primary-700/20 hover:shadow-xl transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-4 px-6 rounded-xl bg-sacred-700 hover:bg-sacred-800 active:bg-sacred-900 bg-gradient-to-r from-sacred-700 via-sacred-800 to-gold-600 text-white font-bold text-base shadow-xl shadow-sacred-700/25 hover:shadow-2xl transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border border-gold-500/30"
               >
                 {isSubmitting ? (
                   <span>{isTamil ? 'சமர்ப்பிக்கப்படுகிறது...' : 'Submitting...'}</span>
                 ) : (
                   <>
-                    <Send className="w-4 h-4" />
-                    <span>{isTamil ? 'கருத்தை சமர்ப்பிக்கவும்' : 'Submit Feedback'}</span>
+                    <Send className="w-5 h-5 text-white" />
+                    <span>{isTamil ? 'கருத்தை சமர்ப்பிக்கவும் (Submit Feedback)' : 'Submit Feedback'}</span>
                   </>
                 )}
               </button>
@@ -338,12 +338,12 @@ export default function FeedbackPage() {
 
         {/* Helpful links below */}
         <div className="mt-8 text-center text-xs text-sanctuary-500 dark:text-sanctuary-400 flex items-center justify-center gap-4">
-          <Link href="/dashboard" className="hover:text-primary-600 transition-colors flex items-center gap-1">
+          <Link href="/dashboard" className="hover:text-gold-600 transition-colors flex items-center gap-1">
             <BookOpen className="w-3.5 h-3.5" />
             <span>{isTamil ? 'வாசிப்புத் திட்டம்' : 'Reading Plan'}</span>
           </Link>
           <span>•</span>
-          <Link href="/booklet" className="hover:text-primary-600 transition-colors flex items-center gap-1">
+          <Link href="/booklet" className="hover:text-gold-600 transition-colors flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{isTamil ? 'இலவச கையேடு' : 'Free Booklet'}</span>
           </Link>

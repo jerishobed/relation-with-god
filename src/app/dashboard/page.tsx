@@ -209,7 +209,7 @@ export default function DashboardPage() {
           </div>
           <Link
             href="/feedback"
-            className="shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-primary-700 to-amber-600 hover:from-primary-800 hover:to-amber-700 text-white text-xs font-bold shadow-sm transition-all"
+            className="shrink-0 px-4 py-2 rounded-xl bg-sacred-700 hover:bg-sacred-800 bg-gradient-to-r from-sacred-700 to-gold-600 text-white text-xs font-bold shadow-sm transition-all"
           >
             {isTamil ? 'கருத்து தெரிவிக்க' : 'Share Feedback'}
           </Link>
