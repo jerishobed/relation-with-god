@@ -1,0 +1,45 @@
+name: Community Broadcast & Encouragement Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Broadcast Mode: "test" (preview to jerishbtech@gmail.com only) or "broadcast" (send to all believers)'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - broadcast
+
+jobs:
+  broadcast:
+    name: Execute Community Broadcast
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Send Broadcast Email
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
+          ADMIN_REPORT_EMAIL: 'jerishbtech@gmail.com'
+          BROADCAST_MODE: ${{ github.event.inputs.mode || 'test' }}
+        run: node scripts/community-broadcast-email.js --mode=${{ github.event.inputs.mode || 'test' }}
