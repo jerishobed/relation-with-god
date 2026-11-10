@@ -129,7 +129,7 @@ function firestoreRequest(path, method = 'GET', body = null, token) {
 
 function parseFirestoreDoc(doc) {
   if (!doc || !doc.fields) return null;
-  const res = { id: doc.name.split('/').pop() };
+  const res = { id: doc.name.split('/').pop(), createTime: doc.createTime, updateTime: doc.updateTime };
   for (const [key, val] of Object.entries(doc.fields)) {
     if (val.stringValue !== undefined) res[key] = val.stringValue;
     else if (val.integerValue !== undefined) res[key] = parseInt(val.integerValue, 10);
@@ -221,8 +221,15 @@ async function dispatchEmail(transporter, { to, subject, html, text }) {
   });
 }
 
+function toISTDate(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  return new Date(d.getTime() + 5.5 * 3600 * 1000).toISOString().split('T')[0];
+}
+
 function getTodayString() {
-  return new Date().toISOString().split('T')[0];
+  const nowIST = new Date(Date.now() + 5.5 * 3600 * 1000);
+  return nowIST.toISOString().split('T')[0];
 }
 
 async function generateAndSendReport() {
@@ -256,7 +263,9 @@ async function generateAndSendReport() {
     const rawProg = await firestoreRequest(`users/${u.id}/progress/current`, 'GET', null, token);
     const prog = parseFirestoreDoc(rawProg);
 
-    const isTodayActive = (u.lastActiveDate === todayStr) || (prog?.lastActiveDate === todayStr);
+    const isTodayActive = (u.lastActiveDate === todayStr) || 
+                          (prog?.lastActiveDate === todayStr) ||
+                          (toISTDate(prog?.updateTime) === todayStr);
 
     if (isTodayActive) {
       activeMembersToday.push({ user: u, prog });
