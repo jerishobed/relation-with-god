@@ -345,7 +345,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
           <p style="margin: 0 0 10px 0; font-size: 13px; color: #1E4620; font-weight: bold;">
             💬 சக விசுவாசிகளுடன் ஐக்கியப்பட WhatsApp குழுவில் இணையுங்கள்:
           </p>
-          <a href="https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);">
+          <a href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3);">
             Join Relations With God WhatsApp Group
           </a>
         </div>
@@ -374,7 +374,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
 </html>
   `;
 
-  const text = `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்!\n\nஅனுதினமும் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்தவும், உங்கள் வேத வாசிப்புப் பயணத்தை உற்சாகப்படுத்தவும் இந்த மடல் அன்போடு எழுதப்படுகிறது.\n\n“உம்முடைய வார்த்தைகள் கிடைத்தவுடனே அவைகளை உட்கொண்டேன்; உம்முடைய வார்த்தை எனக்கு மகிழ்ச்சியும், என் இருதயத்திற்கு ஆனந்தமுமாயிருந்தது...” — எரேமியா 15:16\n\nஉங்கள் அடுத்த வேத வாசிப்புப் பகுதி:\nDay ${nextDayNum}: ${dayDetails.tamilRef} (${dayDetails.englishRef})\nமுடித்த நாட்கள்: ${completedDaysCount} நாட்கள் | வாசித்த அதிகாரங்கள்: ${completedChaptersCount} chs\n\nஇன்றே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\nடேஷ்போர்டு: https://relationswithgod.in/dashboard\nகருத்து தெரிவிக்க: https://relationswithgod.in/feedback\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`;
+  const text = `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்!\n\nஅனுதினமும் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்தவும், உங்கள் வேத வாசிப்புப் பயணத்தை உற்சாகப்படுத்தவும் இந்த மடல் அன்போடு எழுதப்படுகிறது.\n\n“உம்முடைய வார்த்தைகள் கிடைத்தவுடனே அவைகளை உட்கொண்டேன்; உம்முடைய வார்த்தை எனக்கு மகிழ்ச்சியும், என் இருதயத்திற்கு ஆனந்தமுமாயிருந்தது...” — எரேமியா 15:16\n\nஉங்கள் அடுத்த வேத வாசிப்புப் பகுதி:\nDay ${nextDayNum}: ${dayDetails.tamilRef} (${dayDetails.englishRef})\nமுடித்த நாட்கள்: ${completedDaysCount} நாட்கள் | வாசித்த அதிகாரங்கள்: ${completedChaptersCount} chs\n\nஇன்றே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\nடேஷ்போர்டு: https://relationswithgod.in/dashboard\nகருத்து தெரிவிக்க: https://relationswithgod.in/feedback\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t\n\nRelations With God Ministries • https://relationswithgod.in`;
 
   return { subject, html, text };
 }

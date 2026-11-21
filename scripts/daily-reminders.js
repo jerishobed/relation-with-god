@@ -298,7 +298,7 @@ function buildWelcomeEmail(name) {
             <p style="margin: 0 0 10px 0; font-size: 13px; color: #1E4620; font-weight: bold;">
               💬 நமது WhatsApp சமூகத்தில் இணைந்து கொள்ளுங்கள்:
             </p>
-            <a href="https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 8px 16px; border-radius: 8px;">
+            <a href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 8px 16px; border-radius: 8px;">
               Join Official WhatsApp Group
             </a>
           </div>
@@ -310,7 +310,7 @@ function buildWelcomeEmail(name) {
       </div>
     </div>
     `,
-    text: `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}),\n\nRelations With God 365-நாள் வேத வாசிப்புப் பயணத்திற்கு அன்புடன் வரவேற்கிறோம்!\n\nஇன்றே முதல் நாள் வாசிப்பைத் தொடங்குங்கள்:\nDay 1: ஆதியாகமம் 1, 2, 3\n\nவாசிக்க: https://relationswithgod.in/read/1\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`
+    text: `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}),\n\nRelations With God 365-நாள் வேத வாசிப்புப் பயணத்திற்கு அன்புடன் வரவேற்கிறோம்!\n\nஇன்றே முதல் நாள் வாசிப்பைத் தொடங்குங்கள்:\nDay 1: ஆதியாகமம் 1, 2, 3\n\nவாசிக்க: https://relationswithgod.in/read/1\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t\n\nRelations With God Ministries • https://relationswithgod.in`
   };
 }
 
@@ -423,7 +423,7 @@ function buildInactiveReminderEmail(name, inactiveDays, nextDayNum, progressStat
             <p style="margin: 0 0 8px 0; font-size: 12px; color: #1E4620; font-weight: bold;">
               💬 நமது WhatsApp சமூகத்தில் இணையுங்கள்:
             </p>
-            <a href="https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 7px 16px; border-radius: 8px;">
+            <a href="https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t" style="display: inline-block; background: #25D366; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 12px; padding: 7px 16px; border-radius: 8px;">
               Join WhatsApp Community
             </a>
           </div>
@@ -435,7 +435,7 @@ function buildInactiveReminderEmail(name, inactiveDays, nextDayNum, progressStat
       </div>
     </div>
     `,
-    text: `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}),\n\nஉங்கள் Day ${nextDayNum} வாசிப்பு காத்திருக்கிறது 📖\n\nபகுதி: ${dayDetails.tamilRef} (${dayDetails.englishRef})\n\nஉங்கள் முன்னேற்றம்:\n- ${completedCount} / 365 நாட்கள் முடிந்தது (${percent}%)\n- மொத்தம் வாசித்த அதிகாரங்கள்: ${chaptersCount} Chapters\n\nஉடனே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\n\nDear Friend in Christ, before this day ends, spend 5 peaceful minutes in God's Holy Word. Walk at your own pace and be blessed!\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in/dashboard`
+    text: `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}),\n\nஉங்கள் Day ${nextDayNum} வாசிப்பு காத்திருக்கிறது 📖\n\nபகுதி: ${dayDetails.tamilRef} (${dayDetails.englishRef})\n\nஉங்கள் முன்னேற்றம்:\n- ${completedCount} / 365 நாட்கள் முடிந்தது (${percent}%)\n- மொத்தம் வாசித்த அதிகாரங்கள்: ${chaptersCount} Chapters\n\nஉடனே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\n\nDear Friend in Christ, before this day ends, spend 5 peaceful minutes in God's Holy Word. Walk at your own pace and be blessed!\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/HtxaD964WV4EeYFw64MTJY?mode=gi_t\n\nRelations With God Ministries • https://relationswithgod.in/dashboard`
   };
 }
 
