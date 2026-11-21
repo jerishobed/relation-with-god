@@ -283,7 +283,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
             <strong style="color: #1B5E20; font-size: 14px;">நமது விசுவாச குடும்பத்தின் வெற்றிப் படிகள்:</strong>
           </div>
           <p style="font-size: 13px; line-height: 1.6; color: #2E5A31; margin: 0;">
-            நமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து முன்னேறி வருகிறார்கள்! <strong>100 அதிகாரங்களைத் தாண்டி</strong> யாத்திராகமத்திற்குள் (Exodus) பிரவேசித்தும், யோபுவின் முழு புத்தகத்தை (Book of Job) வாசித்து முடித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.
+            நமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து உற்சாகமாய் முன்னேறி வருகிறார்கள்! <strong>140+ அதிகாரங்களைத் தாண்டி</strong> யாத்திராகமம் மற்றும் லேவியராகமத்திற்குள் (Leviticus) பிரவேசித்தும், யோபுவின் புத்தகத்தை (Book of Job) வாசித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.
           </p>
         </div>
 
@@ -384,7 +384,7 @@ function buildCommunityEncouragementEmail({ name, nextDayNum, completedDaysCount
 </html>
   `;
 
-  const text = `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்!\n\nஅனுதினமும் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்தவும், உங்கள் வேத வாசிப்புப் பயணத்தை உற்சாகப்படுத்தவும் இந்த மடல் அன்போடு எழுதப்படுகிறது.\n\n“உம்முடைய வார்த்தைகள் கிடைத்தவுடனே அவைகளை உட்கொண்டேன்; உம்முடைய வார்த்தை எனக்கு மகிழ்ச்சியும், என் இருதயத்திற்கு ஆனந்தமுமாயிருந்தது...” — எரேமியா 15:16\n\nநமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து முன்னேறி வருகிறார்கள்! 100 அதிகாரங்களைத் தாண்டி யாத்திராகமத்திற்குள் (Exodus) பிரவேசித்தும், யோபுவின் முழு புத்தகத்தை (Book of Job) வாசித்து முடித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.\n\nஉங்கள் அடுத்த வேத வாசிப்புப் பகுதி:\nDay ${nextDayNum}: ${dayDetails.tamilRef} (${dayDetails.englishRef})\nமுடித்த நாட்கள்: ${completedDaysCount} நாட்கள் | வாசித்த அதிகாரங்கள்: ${completedChaptersCount} chs\n\nஇன்றே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\nடேஷ்போர்டு: https://relationswithgod.in/dashboard\nகருத்து தெரிவிக்க: https://relationswithgod.in/feedback\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`;
+  const text = `கிறிஸ்துவுக்குள் அன்பான நண்பரே (${displayName}), அன்பின் வாழ்த்துக்கள்!\n\nஅனுதினமும் கர்த்தருடைய வார்த்தையோடு அமைதியாக சில நிமிடங்கள் செலவழித்து உங்கள் ஆத்துமாவை பலப்படுத்தவும், உங்கள் வேத வாசிப்புப் பயணத்தை உற்சாகப்படுத்தவும் இந்த மடல் அன்போடு எழுதப்படுகிறது.\n\n“உம்முடைய வார்த்தைகள் கிடைத்தவுடனே அவைகளை உட்கொண்டேன்; உம்முடைய வார்த்தை எனக்கு மகிழ்ச்சியும், என் இருதயத்திற்கு ஆனந்தமுமாயிருந்தது...” — எரேமியா 15:16\n\nநமது வேதாகம வாசிப்புக் குடும்பத்தில் விசுவாசிகள் தொடர்ந்து உற்சாகமாய் முன்னேறி வருகிறார்கள்! 140+ அதிகாரங்களைத் தாண்டி யாத்திராகமம் மற்றும் லேவியராகமத்திற்குள் (Leviticus) பிரவேசித்தும், யோபுவின் புத்தகத்தை (Book of Job) வாசித்தும் விசுவாசிகள் தேவனுடைய வார்த்தையில் தாகமாய் வளர்கிறார்கள்.\n\nஉங்கள் அடுத்த வேத வாசிப்புப் பகுதி:\nDay ${nextDayNum}: ${dayDetails.tamilRef} (${dayDetails.englishRef})\nமுடித்த நாட்கள்: ${completedDaysCount} நாட்கள் | வாசித்த அதிகாரங்கள்: ${completedChaptersCount} chs\n\nஇன்றே வாசிக்க: https://relationswithgod.in/read/${nextDayNum}\nடேஷ்போர்டு: https://relationswithgod.in/dashboard\nகருத்து தெரிவிக்க: https://relationswithgod.in/feedback\n\nWhatsApp சமூகம்: https://chat.whatsapp.com/GSm4lH0h7t67z8eNqK3Q3Q\n\nRelations With God Ministries • https://relationswithgod.in`;
 
   return { subject, html, text };
 }
