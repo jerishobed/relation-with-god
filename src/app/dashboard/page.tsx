@@ -22,6 +22,7 @@ import {
   MessageSquareHeart,
 } from 'lucide-react';
 import { WhatsAppIcon } from '@/components/SocialIcons';
+import BibleChallengeBanner from '@/components/BibleChallengeBanner';
 
 export default function DashboardPage() {
   const { user, progress, resetProgress, isAuthenticated, loading, openAuthModal, toggleEmailReminders } = useAuth();
@@ -98,6 +99,9 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* 365-Day Bible Reading Challenge Banner (Target: 31 Dec 2027) */}
+        <BibleChallengeBanner />
 
         {/* WhatsApp Community Fellowship Banner */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-emerald-600/10 to-teal-500/10 border border-emerald-500/30 shadow-sm">

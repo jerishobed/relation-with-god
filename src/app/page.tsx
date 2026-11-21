@@ -5,6 +5,7 @@ import Link from 'next/link';
 import HeroSection from '@/components/HeroSection';
 import BibleFactsSection from '@/components/BibleFactsSection';
 import SocialHubSection from '@/components/SocialHubSection';
+import BibleChallengeBanner from '@/components/BibleChallengeBanner';
 import { useAuth } from '@/lib/authContext';
 import { useTheme } from '@/lib/themeContext';
 import {
@@ -45,6 +46,11 @@ export default function HomePage() {
       
       {/* Devotional Hero Section */}
       <HeroSection />
+
+      {/* 365-Day Bible Reading Challenge Banner (Target: 31 Dec 2027) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
+        <BibleChallengeBanner />
+      </div>
 
       {/* Intro from Original Booklet Section */}
       <section className="py-12 bg-white dark:bg-sanctuary-900/50 theme-sepia:bg-[#FAF4E5] border-y border-sanctuary-200 dark:border-sanctuary-800 transition-colors">
